@@ -1,0 +1,18 @@
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="gmGrad" x1="4.7" y1="25" x2="35.4" y2="25" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE566"/>
+      <stop offset="0.45" stop-color="#FFCD00"/>
+      <stop offset="1" stop-color="#F9AC02"/>
+    </linearGradient>
+  </defs>
+  <!-- Body: Figma inset ~9.38% 16.67% 29.17% 16.67% of 50px -->
+  <rect x="4.69" y="8.335" width="30.73" height="33.33" rx="7.2" fill="url(#gmGrad)"/>
+  <!-- White accent dot -->
+  <circle cx="13.35" cy="34.58" r="3.33" fill="#FFFFFF"/>
+  <!-- Lens: Figma inset ~70.83% 22.92% 6.25% 20.83% -->
+  <path
+    d="M35.415 18.48V31.52L45.336 37.83C46.002 38.254 46.873 37.776 46.873 36.987V13.013C46.873 12.224 46.002 11.746 45.336 12.17L35.415 18.48Z"
+    fill="#F9AC02"
+  />
+</svg>

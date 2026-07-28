@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Sami Perwaiz — Product designer crafting people-focused digital experiences."
+    />
+    <title>Sami Perwaiz — Product Designer</title>
+    <!-- Hide system cursor before JS/CSS load (fine pointer only). -->
+    <style>
+      @media (hover: hover) and (pointer: fine) {
+        html,
+        body,
+        html *,
+        html *::before,
+        html *::after {
+          cursor: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
+              0 0,
+            none !important;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        try {
+          if ("scrollRestoration" in history) {
+            history.scrollRestoration = "manual";
+          }
+          var path = location.pathname;
+          var hash = (location.hash || "").replace(/^#/, "");
+          if ((path === "/" || path === "") && (!hash || hash === "hero")) {
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            document.documentElement.classList.add("site-cursor-active");
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@400&family=Poppins:wght@400;500;600&family=Sen:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/style.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
