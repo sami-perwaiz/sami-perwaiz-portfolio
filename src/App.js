@@ -281,12 +281,32 @@ function useClickRing(reduceMotion) {
   }, [reduceMotion]);
 }
 
+/** Native scroll when reduced-motion or on case-study tablet/mobile (avoids Lenis jank). */
+function usePreferNativeScroll(isCaseStudyRoute) {
+  const [preferNative, setPreferNative] = useState(false);
+
+  useEffect(() => {
+    if (!isCaseStudyRoute) {
+      setPreferNative(false);
+      return undefined;
+    }
+
+    const mq = window.matchMedia("(max-width: 1024px)");
+    const update = () => setPreferNative(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [isCaseStudyRoute]);
+
+  return preferNative;
+}
+
 /** Native scroll when reduced-motion; otherwise global Lenis (Apple-style). */
-function useSiteSmoothScroll(reduceMotion, skipHomeEntrance) {
+function useSiteSmoothScroll(reduceMotion, skipHomeEntrance, preferNativeScroll) {
   useEffect(() => {
     initScrollHoverSync();
 
-    if (reduceMotion) {
+    if (reduceMotion || preferNativeScroll) {
       destroySmoothScroll();
       return () => {
         destroyScrollHoverSync();
@@ -324,7 +344,7 @@ function useSiteSmoothScroll(reduceMotion, skipHomeEntrance) {
       destroySmoothScroll();
       destroyScrollHoverSync();
     };
-  }, [reduceMotion, skipHomeEntrance]);
+  }, [reduceMotion, skipHomeEntrance, preferNativeScroll]);
 }
 
 export function App() {
@@ -473,7 +493,8 @@ export function App() {
     };
   }, [deferCursorUntilHero, reduceMotion]);
 
-  useSiteSmoothScroll(reduceMotion, skipHomeEntrance);
+  const preferNativeScroll = usePreferNativeScroll(isProjectRoute);
+  useSiteSmoothScroll(reduceMotion, skipHomeEntrance, preferNativeScroll);
   useClickRing(reduceMotion);
 
   useEffect(() => {

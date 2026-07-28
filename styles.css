@@ -6493,6 +6493,19 @@ body:has(.app-shell--not-found) #root {
   width: 100%;
 }
 
+@media (max-width: 1024px) {
+  .cs-docs__section:not(.cs-docs__section--overview) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
+  }
+
+  .cs-docs-showcase__img,
+  .cs-docs-showcase__video,
+  .cs-docs-showcase__video-poster {
+    transform: translateZ(0);
+  }
+}
+
 .cs-docs__section--overview,
 .cs-docs__section--takeaways {
   gap: 16px;

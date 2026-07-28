@@ -179,17 +179,55 @@ function DocsBenefitCard({ title, intro, items }) {
   );
 }
 
+function docsAssetUrl(assetBase, fileName, cacheKey) {
+  const q = cacheKey ? `?v=${cacheKey}` : "";
+  return `${assetBase}/${fileName}${q}`;
+}
+
+function docsWebpVariants(assetBase, pngFile, cacheKey) {
+  if (!/\.png$/i.test(pngFile)) return null;
+  const base = pngFile.replace(/\.png$/i, "");
+  const q = cacheKey ? `?v=${cacheKey}` : "";
+  return {
+    full: `${assetBase}/${base}.webp${q}`,
+    w480: `${assetBase}/${base}-480.webp${q}`,
+    w768: `${assetBase}/${base}-768.webp${q}`,
+  };
+}
+
 function DocsImg({ assetBase, file, alt, width, height, className, cacheKey }) {
-  const src = cacheKey ? `${assetBase}/${file}?v=${cacheKey}` : `${assetBase}/${file}`;
-  return h("img", {
+  const pngSrc = docsAssetUrl(assetBase, file, cacheKey);
+  const webp = docsWebpVariants(assetBase, file, cacheKey);
+  const imgProps = {
     className,
-    src,
     alt,
     width,
     ...(height != null ? { height } : {}),
     loading: "lazy",
     decoding: "async",
-  });
+    fetchPriority: "low",
+  };
+
+  if (!webp) {
+    return h("img", { ...imgProps, src: pngSrc });
+  }
+
+  const srcSet = [
+    `${webp.w480} 480w`,
+    `${webp.w768} 768w`,
+    `${webp.full} ${width || 1472}w`,
+  ].join(", ");
+
+  return h(
+    "picture",
+    null,
+    h("source", {
+      type: "image/webp",
+      srcSet,
+      sizes: "(max-width: 767px) min(92vw, 480px), (max-width: 1024px) min(92vw, 768px), 736px",
+    }),
+    h("img", { ...imgProps, src: pngSrc })
+  );
 }
 
 function DocsVideoPlayIcon() {
@@ -277,16 +315,22 @@ function DocsVideoPlayer({
   replayOnEnd = false,
   flashControls = false,
 }) {
+  const containerRef = useRef(null);
   const videoRef = useRef(null);
   const flashTimeoutRef = useRef(null);
+  const pendingPlayRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
   const [previewReady, setPreviewReady] = useState(!previewAtEnd);
   const [controlFlash, setControlFlash] = useState(null);
   const [flashOverlayVisible, setFlashOverlayVisible] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const isFullBleed = layout === "full";
-  const videoSrc = cacheKey ? `${assetBase}/${file}?v=${cacheKey}` : `${assetBase}/${file}`;
+  const baseFile = file.replace(/\.(mov|mp4)$/i, "");
+  const videoQuery = cacheKey ? `?v=${cacheKey}` : "";
+  const mp4Src = `${assetBase}/${baseFile}.mp4${videoQuery}`;
+  const movSrc = `${assetBase}/${baseFile}.mov${videoQuery}`;
   const controlHoldMs = 480;
   const controlFadeMs = 420;
 
@@ -335,18 +379,38 @@ function DocsVideoPlayer({
   };
 
   useEffect(() => {
+    if (shouldLoadVideo) return undefined;
+
+    const el = containerRef.current;
+    if (!el) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadVideo(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "240px 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [shouldLoadVideo]);
+
+  useEffect(() => {
     if (!previewAtEnd) return undefined;
 
     setPreviewReady(false);
     const video = videoRef.current;
-    if (!video) return undefined;
+    if (!video || !shouldLoadVideo) return undefined;
 
     if (video.readyState >= 1) {
       preparePreview();
     }
 
     return undefined;
-  }, [previewAtEnd, videoSrc]);
+  }, [previewAtEnd, shouldLoadVideo]);
 
   useEffect(() => {
     return () => {
@@ -384,9 +448,9 @@ function DocsVideoPlayer({
       window.removeEventListener("pagehide", stopVideo);
       stopVideo();
     };
-  }, [previewAtEnd, videoSrc]);
+  }, [previewAtEnd, shouldLoadVideo]);
 
-  const playVideo = ({ fromStart = false } = {}) => {
+  const startPlayback = ({ fromStart = false } = {}) => {
     const isFirstPlay = !hasStarted || fromStart;
     if (isFirstPlay) {
       setHasStarted(true);
@@ -413,6 +477,33 @@ function DocsVideoPlayer({
         });
       }
     });
+  };
+
+  useEffect(() => {
+    if (!shouldLoadVideo || !pendingPlayRef.current) return undefined;
+
+    const pending = pendingPlayRef.current;
+    pendingPlayRef.current = null;
+    const video = videoRef.current;
+    if (!video) return undefined;
+
+    const run = () => startPlayback(pending);
+    if (video.readyState >= 2) {
+      run();
+      return undefined;
+    }
+
+    video.addEventListener("canplay", run, { once: true });
+    return () => video.removeEventListener("canplay", run);
+  }, [shouldLoadVideo, hasStarted, loop]);
+
+  const playVideo = ({ fromStart = false } = {}) => {
+    if (!shouldLoadVideo) {
+      pendingPlayRef.current = { fromStart };
+      setShouldLoadVideo(true);
+      return;
+    }
+    startPlayback({ fromStart });
   };
 
   const pauseVideo = () => {
@@ -527,6 +618,7 @@ function DocsVideoPlayer({
   return h(
     "div",
     {
+      ref: containerRef,
       className: [
         "cs-docs-showcase",
         "cs-docs-showcase--uf-design-premium-video",
@@ -574,26 +666,34 @@ function DocsVideoPlayer({
           height: 1014,
         })
       : null,
-    h("video", {
-      key: videoSrc,
-      ref: videoRef,
-      className: [
-        "cs-docs-showcase__video",
-        isFullBleed ? "cs-docs-showcase__video--full" : "cs-docs-showcase__img cs-docs-showcase__img--phone",
-      ]
-        .filter(Boolean)
-        .join(" "),
-      src: videoSrc,
-      playsInline: true,
-      muted: true,
-      preload: "auto",
-      disablePictureInPicture: true,
-      controlsList: "nodownload nofullscreen noremoteplayback",
-      "aria-label": alt,
-      onLoadedMetadata: preparePreview,
-      onLoadedData: preparePreview,
-      onEnded: handleEnded,
-    }),
+    h(
+      "video",
+      {
+        key: shouldLoadVideo ? mp4Src : "pending",
+        ref: videoRef,
+        className: [
+          "cs-docs-showcase__video",
+          isFullBleed ? "cs-docs-showcase__video--full" : "cs-docs-showcase__img cs-docs-showcase__img--phone",
+        ]
+          .filter(Boolean)
+          .join(" "),
+        playsInline: true,
+        muted: true,
+        preload: shouldLoadVideo ? (previewAtEnd ? "metadata" : "none") : "none",
+        disablePictureInPicture: true,
+        controlsList: "nodownload nofullscreen noremoteplayback",
+        "aria-label": alt,
+        onLoadedMetadata: preparePreview,
+        onLoadedData: preparePreview,
+        onEnded: handleEnded,
+      },
+      shouldLoadVideo
+        ? [
+            h("source", { key: "mp4", src: mp4Src, type: "video/mp4" }),
+            h("source", { key: "mov", src: movSrc, type: "video/quicktime" }),
+          ]
+        : null
+    ),
     ...(showControls ? videoControls : [])
   );
 }
@@ -1310,7 +1410,7 @@ function DocsShowcase({ variant, assetBase, studySlug }) {
     ),
     "design-premium": h(DocsVideoPlayer, {
       assetBase,
-      file: "design-premium.mov",
+      file: "design-premium.mp4",
       poster: "coaching-session.png",
       alt: "Flare coaching session demo",
       layout: "full",
