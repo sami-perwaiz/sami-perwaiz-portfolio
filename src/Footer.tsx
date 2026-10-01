@@ -2,17 +2,19 @@ import { a } from "./assets";
 import { externalSocialLinks } from "./externalLinks";
 
 const footerLinks = [
-  { label: "About Me", href: "#about" },
-  { label: "Projects", href: "#projects" },
-  { label: "Skills", href: "#toolkit" },
-  { label: "Contact Us", href: "#contact" },
+  { label: "About Me", sectionId: "about" },
+  { label: "Projects", sectionId: "projects" },
+  { label: "Skills", sectionId: "toolkit" },
+  { label: "Contact Us", sectionId: "contact" },
 ] as const;
 
 export default function Footer({
   homeAnchors = false,
+  sectionNavigation = false,
   footerText = "© 2026 Sami Perwaiz. All Rights Reserved.",
 }: {
   homeAnchors?: boolean;
+  sectionNavigation?: boolean;
   footerText?: string;
 }) {
   return (
@@ -22,7 +24,11 @@ export default function Footer({
           <p className="footer-brand">Sami Perwaiz</p>
           <nav className="footer-links" aria-label="Footer">
             {footerLinks.map((link) => (
-              <a key={link.label} href={homeAnchors ? `/${link.href}` : link.href}>
+              <a
+                key={link.label}
+                href={homeAnchors ? `/#${link.sectionId}` : sectionNavigation ? "/" : `#${link.sectionId}`}
+                data-home-section={sectionNavigation ? link.sectionId : undefined}
+              >
                 {link.label}
               </a>
             ))}

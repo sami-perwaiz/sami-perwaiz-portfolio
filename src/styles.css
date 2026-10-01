@@ -2670,3 +2670,694 @@ button {
     line-height: 36px;
   }
 }
+
+/* Home page responsive layout. The 1440px desktop canvas above remains the source of truth. */
+@media (max-width: 1439px) {
+  .page {
+    --home-gutter: clamp(32px, 4vw, 50px);
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    padding-top: clamp(240px, 22vw, 320px);
+    overflow: hidden;
+  }
+
+  .page .hero-title {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: min(329px, calc(100% - (2 * var(--home-gutter))));
+    margin: 0 auto;
+  }
+
+  .page .hero-tag {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: min(527px, calc(100% - (2 * var(--home-gutter))));
+    margin: clamp(130px, 14vw, 200px) auto 0;
+    transform: none;
+  }
+
+  .page .section {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: calc(100% - (2 * var(--home-gutter)));
+    max-width: 1340px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .page .vision {
+    margin-top: clamp(150px, 15vw, 220px);
+    gap: clamp(64px, 7vw, 100px);
+  }
+
+  .page .experience,
+  .page .gallery,
+  .page .projects,
+  .page .toolkit,
+  .page .services,
+  .page .faq,
+  .page .testimonials {
+    margin-top: clamp(140px, 14vw, 200px);
+  }
+
+  .page .experience,
+  .page .gallery,
+  .page .projects {
+    gap: clamp(64px, 7vw, 100px);
+  }
+
+  .page .row-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page .card-sm {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 658 / 472;
+  }
+
+  .page .card-lg,
+  .page .card-lg.teal {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1340 / 961;
+  }
+
+  .page .inner-screen {
+    width: 92.4%;
+    height: auto;
+  }
+
+  .page .inner-lg,
+  .page .inner-lg6 {
+    width: 95%;
+    height: auto;
+  }
+
+  .page .card-lg .play {
+    top: 30px !important;
+    right: 30px;
+    left: auto !important;
+  }
+
+  .page .grid-4 {
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+  }
+
+  .page .grid-4 .cell {
+    aspect-ratio: 658 / 472;
+    container-type: inline-size;
+  }
+
+  .page .grid-4 .cell:first-child > img:first-child {
+    top: 26.48% !important;
+    left: 9.42% !important;
+    width: 33.13% !important;
+    height: auto !important;
+  }
+
+  .page .grid-4 .cell:first-child > img:last-child {
+    top: 61.65% !important;
+    left: 74.47% !important;
+    width: 37.69% !important;
+    height: auto !important;
+  }
+
+  .page .grid-4 .cell:last-child .inner-screen {
+    width: 92.4% !important;
+    height: auto !important;
+  }
+
+  .page .cross-h {
+    width: 98.48%;
+  }
+
+  .page .cross-h:nth-of-type(1) { top: 22.46% !important; }
+  .page .cross-h:nth-of-type(2) { top: 17.58% !important; }
+  .page .cross-h:nth-of-type(3) { top: 76.69% !important; }
+  .page .cross-h:nth-of-type(4) { top: 81.57% !important; }
+
+  .page .cross-v {
+    top: 0;
+    left: 49.24%;
+    height: 100%;
+  }
+
+  .page .cross-v-inner {
+    width: 71.73cqw;
+  }
+
+  .page .grid-4 .cell .play {
+    top: 25px !important;
+    right: 25px;
+    left: auto !important;
+  }
+
+  .page .exp-photo {
+    width: clamp(286px, 27vw, 346px);
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .page .stats {
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 136px);
+  }
+
+  .page .gallery-grid {
+    height: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: none;
+    grid-auto-flow: row;
+  }
+
+  .page .g-wide {
+    aspect-ratio: 888 / 435;
+  }
+
+  .page .g-cell {
+    aspect-ratio: 1;
+  }
+
+  .page .project-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page .project,
+  .page .thumb {
+    width: 100%;
+  }
+
+  .page .thumb {
+    height: auto;
+    aspect-ratio: 654 / 400;
+  }
+
+  .page .thumb-bg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .page .toolkit {
+    padding: clamp(32px, 4vw, 50px);
+  }
+
+  .page .toolkit-board {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(24px, 4vw, 80px);
+    padding: clamp(32px, 4vw, 50px);
+  }
+
+  .page .tool-row {
+    display: contents;
+  }
+
+  .page .tool-item,
+  .page .tool-icon {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .page .faq-row.is-open .faq-content {
+    width: auto;
+    flex: 1;
+  }
+
+  .page .social {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    margin-top: clamp(140px, 14vw, 200px);
+    padding: clamp(88px, 9vw, 120px) var(--home-gutter);
+  }
+
+  .page .social-grid {
+    width: min(680px, 100%);
+  }
+
+  .page .home-page-tail {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+  }
+
+  .page .home-page-tail .cta-wrap,
+  .page .home-page-tail .footer {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1023px) {
+  .page {
+    --home-gutter: 32px;
+    padding-top: clamp(220px, 27vw, 276px);
+  }
+
+  .page .hero-tag {
+    margin-top: clamp(112px, 15vw, 150px);
+  }
+
+  .page .vision {
+    margin-top: clamp(130px, 17vw, 170px);
+  }
+
+  .page .experience,
+  .page .gallery,
+  .page .projects,
+  .page .toolkit,
+  .page .services,
+  .page .faq,
+  .page .testimonials,
+  .page .social {
+    margin-top: clamp(120px, 15vw, 160px);
+  }
+
+  .page .section-head h2 {
+    font-size: clamp(44px, 6vw, 54px);
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .page .vision-head,
+  .page .experience-head p,
+  .page .gallery-head p,
+  .page .projects-head p,
+  .page .faq-head p,
+  .page .t-head p {
+    width: min(100%, 607px);
+  }
+
+  .page .exp-top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.39fr) minmax(0, 0.61fr);
+    align-items: center;
+  }
+
+  .page .exp-photo {
+    width: 100%;
+    max-width: 346px;
+    justify-self: center;
+  }
+
+  .page .exp-cards {
+    min-width: 0;
+  }
+
+  .page .job-name,
+  .page .job-role {
+    white-space: normal;
+  }
+
+  .page .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page .toolkit-board {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .page .toolkit-head p,
+  .page .services-head p {
+    width: min(100%, 520px);
+  }
+
+  .page .service-card {
+    width: min(350px, calc(50vw - var(--home-gutter)));
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .page #about {
+    scroll-margin-top: 128px;
+  }
+
+  .page .exp-top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.39fr) minmax(0, 0.61fr);
+    align-items: center;
+  }
+
+  .page .exp-photo {
+    width: 100%;
+    max-width: 346px;
+    justify-self: center;
+  }
+
+  .page .exp-cards {
+    min-width: 0;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .page .job-card {
+    height: 169px;
+  }
+}
+
+@media (max-width: 767px) {
+  .page .exp-top {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+  }
+
+  .page .exp-photo {
+    width: min(100%, 346px);
+    align-self: center;
+  }
+
+  .page .exp-cards {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    --home-gutter: 20px;
+    padding-top: clamp(176px, 46vw, 210px);
+  }
+
+  .page .hero-title {
+    align-items: center;
+  }
+
+  .page .hero-name-row {
+    gap: 12px;
+  }
+
+  .page .hero-im,
+  .page .hero-sami {
+    font-size: clamp(48px, 14vw, 62px);
+    line-height: 1.15;
+  }
+
+  .page .hero-photo {
+    width: clamp(46px, 13vw, 56px);
+    height: clamp(46px, 13vw, 56px);
+  }
+
+  .page .hero-balance {
+    width: min(100%, 329px);
+    font-size: clamp(24px, 7vw, 28px);
+    line-height: 1.3;
+  }
+
+  .page .hero-tag {
+    margin-top: clamp(92px, 26vw, 120px);
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  .page .vision {
+    margin-top: 120px;
+  }
+
+  .page .experience,
+  .page .gallery,
+  .page .projects,
+  .page .toolkit,
+  .page .services,
+  .page .faq,
+  .page .testimonials,
+  .page .social {
+    margin-top: 120px;
+  }
+
+  .page #about {
+    scroll-margin-top: 116px;
+  }
+
+  .page .vision,
+  .page .experience,
+  .page .gallery,
+  .page .projects {
+    gap: 52px;
+  }
+
+  .page .section-head {
+    gap: 12px;
+  }
+
+  .page .section-head h2 {
+    font-size: clamp(36px, 10vw, 44px);
+  }
+
+  .page .section-head p {
+    width: min(100%, 540px);
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .page .row-2,
+  .page .grid-4,
+  .page .project-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page .showcase,
+  .page .row-2,
+  .page .grid-4 {
+    gap: 16px;
+  }
+
+  .page .card-sm,
+  .page .grid-4 .cell {
+    border-radius: 14px;
+  }
+
+  .page .card-lg,
+  .page .card-lg.teal {
+    border-radius: 22px;
+  }
+
+  .page .card-lg .play,
+  .page .grid-4 .cell .play {
+    top: 16px !important;
+    right: 16px;
+  }
+
+  .page .exp-body {
+    gap: 32px;
+  }
+
+  .page .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page .project-list,
+  .page .project-row {
+    gap: 32px;
+  }
+
+  .page .project {
+    gap: 16px;
+  }
+
+  .page .project-sub {
+    line-height: 24px;
+    white-space: normal;
+  }
+
+  .page .toolkit {
+    padding: 24px;
+    border-radius: 18px;
+  }
+
+  .page .toolkit-inner {
+    gap: 32px;
+  }
+
+  .page .toolkit-head h2,
+  .page .services-head h2 {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .page .toolkit-board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    padding: 24px;
+    border-radius: 18px;
+  }
+
+  .page .services {
+    gap: 40px;
+  }
+
+  .page .services-carousel {
+    gap: 36px;
+  }
+
+  .page .service-card {
+    width: min(350px, calc(100vw - (2 * var(--home-gutter))));
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 350 / 450;
+    padding: 20px;
+  }
+
+  .page .service-row,
+  .page .service-viewport {
+    height: calc(min(350px, 100vw - (2 * var(--home-gutter))) * 1.285714);
+  }
+
+  .page .service-preview {
+    height: auto;
+    aspect-ratio: 302 / 134;
+  }
+
+  .page .faq-list {
+    gap: 24px;
+  }
+
+  .page .faq-item {
+    gap: 14px;
+  }
+
+  .page .faq-row {
+    align-items: flex-start;
+    gap: 16px;
+    padding: 0 4px;
+  }
+
+  .page .faq-q {
+    line-height: 1.35;
+  }
+
+  .page .t-row {
+    flex-direction: column;
+  }
+
+  .page .t-card {
+    width: 100%;
+  }
+
+  .page .social {
+    padding: 80px var(--home-gutter);
+  }
+
+  .page .social-inner {
+    gap: 56px;
+  }
+
+  .page .social-title {
+    font-size: clamp(30px, 8vw, 36px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .page .social-pair {
+    flex-direction: column;
+  }
+
+  .page .social-item {
+    width: 100%;
+    flex: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .page .exp-row {
+    flex-direction: column;
+  }
+
+  .page .job-card {
+    width: 100%;
+    flex: none;
+  }
+
+  .page .stats {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(3, 136px);
+  }
+
+  .page .stat.wide {
+    grid-column: auto;
+  }
+
+  .page .gallery-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page .g-wide {
+    grid-column: auto;
+  }
+
+  .page .toolkit,
+  .page .toolkit-board {
+    padding: 20px;
+  }
+
+  .page .t-foot {
+    align-items: center;
+    gap: 16px;
+  }
+
+  .page .social-item-inner span {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 389px) {
+  .page {
+    --home-gutter: 16px;
+  }
+
+  .page .hero-name-row {
+    gap: 10px;
+  }
+
+  .page .hero-im,
+  .page .hero-sami {
+    font-size: clamp(42px, 14vw, 52px);
+  }
+
+  .page .section-head h2,
+  .page .toolkit-head h2,
+  .page .services-head h2 {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .page .toolkit,
+  .page .toolkit-board {
+    padding: 16px;
+  }
+
+  .page .toolkit-board {
+    gap: 10px;
+  }
+
+  .page .t-foot {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page .social-item {
+    padding: 14px;
+  }
+
+  .page .social-item-inner {
+    gap: 10px;
+  }
+
+  .page .social-item-inner span {
+    font-size: 16px;
+  }
+}

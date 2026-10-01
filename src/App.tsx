@@ -16,6 +16,7 @@ import UnflappableCaseStudyPage from "./UnflappableCaseStudy";
 import AxisHealthCaseStudyPage from "./AxisHealthCaseStudy";
 import { a } from "./assets";
 import { externalSocialLinks } from "./externalLinks";
+import { isHomeSectionId, scrollToHomeSection, type HomeSectionId } from "./homeSectionNavigation";
 
 function Stars() {
   return (
@@ -306,39 +307,44 @@ function JobCard({
 }
 
 const navItems = [
-  { icon: a.navHome, label: "Home", href: "#hero" },
-  { icon: a.navUser, label: "About", href: "#about" },
-  { icon: a.navCode, label: "Services", href: "#services" },
-  { icon: a.navDesign, label: "Tools", href: "#toolkit" },
-  { icon: a.navFolder, label: "Projects", href: "#projects" },
-  { icon: a.navChat, label: "Reviews", href: "#testimonials" },
+  { icon: a.navHome, label: "Home", sectionId: "hero" },
+  { icon: a.navUser, label: "About", sectionId: "about" },
+  { icon: a.navCode, label: "Services", sectionId: "services" },
+  { icon: a.navDesign, label: "Tools", sectionId: "toolkit" },
+  { icon: a.navFolder, label: "Projects", sectionId: "projects" },
+  { icon: a.navChat, label: "Reviews", sectionId: "testimonials" },
 ] as const;
 
 const mobileNavItems = [
-  { icon: a.mobileNavHome, label: "Home", href: "#hero" },
-  { icon: a.mobileNavUser, label: "About Me", href: "#about" },
-  { icon: a.mobileNavServices, label: "Services", href: "#services" },
-  { icon: a.mobileNavTools, label: "Tools", href: "#toolkit" },
-  { icon: a.mobileNavProjects, label: "Projects", href: "#projects" },
-  { icon: a.mobileNavTestimonials, label: "Testimonials", href: "#testimonials" },
+  { icon: a.mobileNavHome, label: "Home", sectionId: "hero" },
+  { icon: a.mobileNavUser, label: "About Me", sectionId: "about" },
+  { icon: a.mobileNavServices, label: "Services", sectionId: "services" },
+  { icon: a.mobileNavTools, label: "Tools", sectionId: "toolkit" },
+  { icon: a.mobileNavProjects, label: "Projects", sectionId: "projects" },
+  { icon: a.mobileNavTestimonials, label: "Testimonials", sectionId: "testimonials" },
 ] as const;
 
 function NavTooltip({ label }: { label: string }) {
   return <span className="nav-tooltip">{label}</span>;
 }
 
-function NavIcon({ icon, label, href }: { icon: string; label: string; href: string }) {
-  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    if (href !== "#hero") return;
-    event.preventDefault();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    if (window.location.hash !== "#hero") {
-      history.pushState(null, "", "#hero");
-    }
-  };
-
+function NavIcon({
+  icon,
+  label,
+  sectionId,
+  homeAnchors,
+}: {
+  icon: string;
+  label: string;
+  sectionId: HomeSectionId;
+  homeAnchors: boolean;
+}) {
   return (
-    <a className="nav-item" href={href} onClick={handleClick}>
+    <a
+      className="nav-item"
+      href={homeAnchors ? `/#${sectionId}` : "/"}
+      data-home-section={homeAnchors ? undefined : sectionId}
+    >
       <img src={icon} alt="" width={22} height={22} />
       <NavTooltip label={label} />
     </a>
@@ -405,13 +411,8 @@ function Nav({ homeAnchors = false, responsiveHome = false }: { homeAnchors?: bo
     return () => desktopQuery.removeEventListener("change", closeAtDesktop);
   }, [responsiveHome]);
 
-  const handleMobileNavClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleMobileNavClick = () => {
     setMenuOpen(false);
-    if (href !== "#hero") return;
-
-    event.preventDefault();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    if (window.location.hash !== "#hero") history.pushState(null, "", "#hero");
   };
 
   return (
@@ -440,15 +441,20 @@ function Nav({ homeAnchors = false, responsiveHome = false }: { homeAnchors?: bo
       <div className="nav-icons">
         {navItems.map((item) => (
           <NavIcon
-            key={item.href}
+            key={item.sectionId}
             icon={item.icon}
             label={item.label}
-            href={homeAnchors ? `/${item.href}` : item.href}
+            sectionId={item.sectionId}
+            homeAnchors={homeAnchors}
           />
         ))}
       </div>
       <p className="nav-hello sf sf-reg">
-        <a className="nav-hello-link" href={homeAnchors ? "/#contact" : "#contact"}>
+        <a
+          className="nav-hello-link"
+          href={homeAnchors ? "/#contact" : "/"}
+          data-home-section={homeAnchors ? undefined : "contact"}
+        >
           Say Hello
         </a>{" "}
         <span
@@ -462,8 +468,8 @@ function Nav({ homeAnchors = false, responsiveHome = false }: { homeAnchors?: bo
       {responsiveHome ? (
         <ul className="home-nav-menu" id="home-mobile-navigation" aria-hidden={!menuOpen}>
           {mobileNavItems.map((item) => (
-            <li key={item.href}>
-              <a href={item.href} onClick={(event) => handleMobileNavClick(event, item.href)}>
+            <li key={item.sectionId}>
+              <a href="/" data-home-section={item.sectionId} onClick={handleMobileNavClick}>
                 <img src={item.icon} alt="" width={22} height={22} />
                 <span>{item.label}</span>
               </a>
@@ -1482,7 +1488,7 @@ function HomePage() {
 
       <div className="home-page-tail">
         <HomeCta />
-        <Footer />
+        <Footer sectionNavigation />
       </div>
       </div>
     </>
@@ -1741,6 +1747,15 @@ function getHistoryState() {
   return window.history.state && typeof window.history.state === "object" ? window.history.state : {};
 }
 
+function scrollWindowImmediately(top: number) {
+  const root = document.documentElement;
+  const previousScrollBehavior = root.style.scrollBehavior;
+
+  root.style.scrollBehavior = "auto";
+  window.scrollTo({ top, left: 0, behavior: "auto" });
+  root.style.scrollBehavior = previousScrollBehavior;
+}
+
 export default function App() {
   const initialCasePath = getCaseStudyPath(window.location.pathname);
   const [phase, setPhase] = useState<NavigationPhase>(initialCasePath ? "case" : "home");
@@ -1886,9 +1901,9 @@ export default function App() {
 
     if (phase === "home" && restoreHomeScrollRef.current) {
       restoreHomeScrollRef.current = false;
-      window.scrollTo(0, homeScrollRef.current);
+      scrollWindowImmediately(homeScrollRef.current);
     } else if (phase === "case" && focusCaseRef.current) {
-      window.scrollTo(0, 0);
+      scrollWindowImmediately(0);
     }
   }, [isTransitioning, lockDocumentScroll, phase, unlockDocumentScroll]);
 
@@ -1967,7 +1982,7 @@ export default function App() {
           openCaseStudy(nextCasePath, null, false, savedScroll);
         } else if (phaseRef.current === "case" && casePathRef.current !== nextCasePath) {
           setCasePath(nextCasePath);
-          window.scrollTo(0, 0);
+          scrollWindowImmediately(0);
         }
         return;
       }
@@ -2009,6 +2024,13 @@ export default function App() {
 
     const destination = new URL(anchor.href, window.location.href);
     if (destination.origin !== window.location.origin) return;
+
+    const homeSection = anchor.dataset.homeSection;
+    if (phaseRef.current === "home" && isHomeSectionId(homeSection)) {
+      event.preventDefault();
+      scrollToHomeSection(homeSection);
+      return;
+    }
 
     const destinationCase = getCaseStudyPath(destination.pathname);
     if (anchor.classList.contains("project") && destinationCase && phaseRef.current === "home") {
