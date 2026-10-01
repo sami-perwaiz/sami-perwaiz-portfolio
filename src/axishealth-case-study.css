@@ -1,0 +1,86 @@
+.axishealth-case .axishealth-hero { height: 580px; }
+.axishealth-case .axishealth-hero .flare-hero-description-row { height: 500px; }
+.axishealth-hero-copy { color: var(--flare-muted); font-size: 18px; font-weight: 400; line-height: 2; }
+
+.axishealth-target-users { display: flex; flex-direction: column; gap: 32px; }
+.axishealth-user-grid article { height: 165px; }
+.axishealth-user-grid article:nth-child(n + 3) { height: 206px; }
+.axishealth-user-grid h3 { line-height: 1.3; }
+
+.axishealth-case .flare-visual > img { object-fit: cover; }
+.axishealth-visual--pair { height: 528px; }
+.axishealth-visual--pair > img {
+  width: 307px;
+  height: 667px;
+  border-radius: 6px;
+  box-shadow: 0 0 30px 5px rgba(0,0,0,.03);
+}
+.axishealth-phone-left { top: 53px; left: 53px; }
+.axishealth-phone-right { top: 54px; left: 376px; }
+
+.axishealth-visual--phone { height: 692px; }
+.axishealth-visual--phone > img {
+  top: 60px;
+  left: 236px;
+  width: 263px;
+  height: 572px;
+  border-radius: 6px;
+  box-shadow: 0 0 30px 5px rgba(0,0,0,.03);
+}
+
+.axishealth-case .axishealth-user-benefits { height: 420px; min-height: 420px; }
+
+.axishealth-case .flare-end-nav a,
+.axishealth-case .flare-end-nav button { height: 49px; min-height: 49px; }
+.axishealth-case .flare-case-footer { height: 60px; }
+
+.axishealth-visual--system { height: 620px; }
+.axishealth-visual--system > img { top: 57px; box-shadow: 0 0 20px 5px rgba(0,0,0,.05); }
+.axishealth-system-type { left: 74px; width: 324px; height: 506px; }
+.axishealth-system-color { left: 429.5px; width: 240px; height: 225px; }
+
+.axishealth-visual--fields { height: 581px; }
+.axishealth-visual--fields > img { top: 58.5px; left: 167.5px; width: 401px; height: 464px; }
+.axishealth-visual--buttons { height: 518px; }
+.axishealth-visual--buttons > img { top: 131px; left: 172px; width: 392px; height: 256px; }
+.axishealth-visual--cards { height: 528px; }
+.axishealth-visual--cards > img { top: 160.5px; left: 113.5px; width: 509px; height: 207px; }
+.axishealth-visual--charts { height: 731px; }
+.axishealth-visual--charts > img { top: 136px; left: 147px; width: 442px; height: 460px; }
+.axishealth-visual--navigation { height: 424px; }
+.axishealth-visual--navigation > img { top: 89.75px; left: 111.5px; width: 513px; height: 243.5px; }
+
+.axishealth-case .flare-end-nav a:focus-visible,
+.axishealth-case .flare-end-nav button:focus-visible { outline: 2px solid #0a0a0a; outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .axishealth-case .axishealth-hero { height: auto; }
+  .axishealth-case .axishealth-hero .flare-hero-description-row { height: auto; }
+  .axishealth-case .flare-visual { height: auto; }
+  .axishealth-case .flare-visual > img { height: auto; }
+  .axishealth-visual--pair { aspect-ratio: 736 / 528; }
+  .axishealth-visual--pair > img { width: 41.712%; }
+  .axishealth-phone-left { top: 10.038%; left: 7.201%; }
+  .axishealth-phone-right { top: 10.227%; left: 51.087%; }
+  .axishealth-visual--phone { aspect-ratio: 736 / 692; }
+  .axishealth-visual--phone > img { top: 8.671%; left: 32.065%; width: 35.734%; }
+  .axishealth-visual--system { aspect-ratio: 736 / 620; }
+  .axishealth-system-type { top: 9.194% !important; left: 10.054%; width: 44.022%; }
+  .axishealth-system-color { top: 9.194% !important; left: 58.356%; width: 32.609%; }
+  .axishealth-visual--fields { aspect-ratio: 736 / 581; }
+  .axishealth-visual--fields > img { top: 10.069%; left: 22.758%; width: 54.484%; }
+  .axishealth-visual--buttons { aspect-ratio: 736 / 518; }
+  .axishealth-visual--buttons > img { top: 25.29%; left: 23.37%; width: 53.261%; }
+  .axishealth-visual--cards { aspect-ratio: 736 / 528; }
+  .axishealth-visual--cards > img { top: 30.398%; left: 15.421%; width: 69.158%; }
+  .axishealth-visual--charts { aspect-ratio: 736 / 731; }
+  .axishealth-visual--charts > img { top: 18.605%; left: 19.973%; width: 60.054%; }
+  .axishealth-visual--navigation { aspect-ratio: 736 / 424; }
+  .axishealth-visual--navigation > img { top: 21.167%; left: 15.149%; width: 69.701%; }
+}
+
+@media (max-width: 560px) {
+  .axishealth-user-grid article,
+  .axishealth-user-grid article:nth-child(n + 3) { height: auto; min-height: 165px; }
+  .axishealth-case .axishealth-user-benefits { height: auto; min-height: 0; }
+}

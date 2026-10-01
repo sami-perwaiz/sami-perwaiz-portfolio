@@ -1,0 +1,100 @@
+.unflappable-case .unflappable-benefit-card {
+  height: 648px;
+  min-height: 648px;
+}
+
+.unflappable-case .flare-visual > img {
+  object-fit: cover;
+}
+
+.unflappable-visual--single-phone,
+.unflappable-visual--phone-pair { height: 528px; }
+.unflappable-visual--single-phone > img,
+.unflappable-visual--phone-pair > img {
+  border-radius: 6px;
+  box-shadow: 0 0 30px 5px rgba(0,0,0,.03);
+}
+.unflappable-visual--single-phone > img { top: 82px; left: 135px; width: 466px; height: 1014px; }
+.unflappable-visual--phone-pair > img { width: 307px; height: 667px; }
+.unflappable-phone-left { top: 53px; left: 53px; }
+.unflappable-phone-right { top: 54px; left: 376px; }
+
+.unflappable-visual--reset-result { height: 670px; }
+.unflappable-visual--reset-result > img {
+  top: 112px;
+  left: 168px;
+  width: 400px;
+  height: 446px;
+  box-shadow: 0 0 30px 5px rgba(0,0,0,.03);
+}
+
+.unflappable-visual--phone { height: 692px; }
+.unflappable-visual--phone > img {
+  top: 60px;
+  left: 236px;
+  width: 263px;
+  height: 572px;
+  border-radius: 6px;
+  box-shadow: 0 0 30px 5px rgba(0,0,0,.03);
+}
+.unflappable-visual--reset-history > img { box-shadow: 0 0 30px 5px rgba(0,0,0,.05); }
+
+.unflappable-visual--system-navigation { height: 620px; }
+.unflappable-visual--system-navigation > img { top: 57px; box-shadow: 0 0 20px 5px rgba(0,0,0,.05); }
+.unflappable-system-main { left: 74px; width: 324px; height: 506px; }
+.unflappable-system-detail { left: 430px; width: 239px; height: 105px; }
+
+.unflappable-visual--system-fields { height: 581px; }
+.unflappable-visual--system-fields > img { top: 112.5px; left: 83px; width: 570px; height: 356px; }
+
+.unflappable-visual--system-buttons,
+.unflappable-visual--system-toggle,
+.unflappable-visual--system-control,
+.unflappable-visual--system-input { height: 424px; }
+.unflappable-visual--system-buttons > img { top: 79px; left: 110px; width: 516px; height: 265.5px; }
+.unflappable-visual--system-toggle > img { top: 105px; left: 289px; width: 158px; height: 213.5px; }
+.unflappable-visual--system-control > img { top: 104px; left: 262px; width: 243px; height: 249px; }
+.unflappable-visual--system-input > img { top: 154px; left: 85px; width: 587px; height: 141px; }
+
+.unflappable-visual--system-premium { height: 547px; }
+.unflappable-visual--system-premium > img { top: 152px; left: 168px; width: 421px; height: 244px; }
+
+.unflappable-case .flare-end-nav a:focus-visible,
+.unflappable-case .flare-end-nav button:focus-visible {
+  outline: 2px solid #0a0a0a;
+  outline-offset: 3px;
+}
+
+@media (max-width: 800px) {
+  .unflappable-case .flare-visual { height: auto; }
+  .unflappable-case .flare-visual > img { height: auto; }
+  .unflappable-visual--single-phone,
+  .unflappable-visual--phone-pair { aspect-ratio: 736 / 528; }
+  .unflappable-visual--single-phone > img { top: 15.53%; left: 18.342%; width: 63.315%; }
+  .unflappable-visual--phone-pair > img { width: 41.712%; }
+  .unflappable-phone-left { top: 10.038%; left: 7.201%; }
+  .unflappable-phone-right { top: 10.227%; left: 51.087%; }
+  .unflappable-visual--reset-result { aspect-ratio: 736 / 670; }
+  .unflappable-visual--reset-result > img { top: 16.716%; left: 22.826%; width: 54.348%; }
+  .unflappable-visual--phone { aspect-ratio: 736 / 692; }
+  .unflappable-visual--phone > img { top: 8.671%; left: 32.065%; width: 35.734%; }
+  .unflappable-visual--system-navigation { aspect-ratio: 736 / 620; }
+  .unflappable-system-main { top: 9.194% !important; left: 10.054%; width: 44.022%; }
+  .unflappable-system-detail { top: 9.194% !important; left: 58.424%; width: 32.473%; }
+  .unflappable-visual--system-fields { aspect-ratio: 736 / 581; }
+  .unflappable-visual--system-fields > img { top: 19.363%; left: 11.277%; width: 77.446%; }
+  .unflappable-visual--system-buttons,
+  .unflappable-visual--system-toggle,
+  .unflappable-visual--system-control,
+  .unflappable-visual--system-input { aspect-ratio: 736 / 424; }
+  .unflappable-visual--system-buttons > img { top: 18.632%; left: 14.946%; width: 70.109%; }
+  .unflappable-visual--system-toggle > img { top: 24.764%; left: 39.266%; width: 21.467%; }
+  .unflappable-visual--system-control > img { top: 24.528%; left: 35.598%; width: 33.016%; }
+  .unflappable-visual--system-input > img { top: 36.321%; left: 11.549%; width: 79.755%; }
+  .unflappable-visual--system-premium { aspect-ratio: 736 / 547; }
+  .unflappable-visual--system-premium > img { top: 27.788%; left: 22.826%; width: 57.201%; }
+}
+
+@media (max-width: 560px) {
+  .unflappable-case .unflappable-benefit-card { height: auto; min-height: 0; }
+}

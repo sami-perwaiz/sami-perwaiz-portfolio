@@ -1,0 +1,111 @@
+.shipflex-case .shipflex-approach .flare-principles article:nth-child(-n+2) { height: 140px; }
+
+.shipflex-case .shipflex-benefit-card {
+  height: 648px;
+  min-height: 648px;
+}
+
+.shipflex-case .flare-visual > img {
+  object-fit: cover;
+}
+
+.shipflex-visual--login { height: 528px; }
+.shipflex-visual--login > img {
+  top: 26px;
+  left: 50%;
+  width: 669px;
+  height: 476px;
+  border-radius: 6px;
+  box-shadow: 0 0 20px 5px rgba(0,0,0,.05);
+  transform: translateX(-50%);
+}
+
+.shipflex-visual--dashboard { height: 550px; }
+.shipflex-visual--dashboard > img {
+  top: 39px;
+  left: 50%;
+  width: 663px;
+  height: 472px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 5px rgba(0,0,0,.05);
+  transform: translateX(-50%);
+}
+
+.shipflex-visual--shipments { height: 620px; }
+.shipflex-visual--shipments > img {
+  top: 29px;
+  left: 50%;
+  width: 661px;
+  height: 561px;
+  border-radius: 6px;
+  box-shadow: 0 0 20px 5px rgba(0,0,0,.05);
+  transform: translateX(-50%);
+}
+
+.shipflex-visual--navigation { height: 620px; }
+.shipflex-visual--navigation > img {
+  top: 57px;
+  border-radius: 6px;
+  box-shadow: 0 0 20px 5px rgba(0,0,0,.05);
+}
+.shipflex-navigation-main { left: 76px; width: 320px; height: 506px; }
+.shipflex-navigation-detail { left: 420px; width: 240px; height: 247px; }
+
+.shipflex-visual--fields { height: 581px; }
+.shipflex-visual--fields > img { top: 56.5px; left: 63px; width: 610px; height: 468px; }
+
+.shipflex-visual--buttons,
+.shipflex-visual--toggle,
+.shipflex-visual--controls { height: 424px; }
+.shipflex-visual--buttons > img { top: 83px; left: 113px; width: 510px; height: 258px; }
+.shipflex-visual--toggle > img { top: 98px; left: 288px; width: 160px; height: 228px; }
+.shipflex-visual--controls > img { top: 132px; left: 233px; width: 269px; height: 159px; }
+
+.shipflex-visual--full-product {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px;
+}
+.shipflex-visual--full-product > img {
+  position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 841 / 4096;
+  border-radius: 30px;
+  box-shadow: 0 0 30px 5px rgba(0,0,0,.05);
+}
+
+.shipflex-case .flare-end-nav a:focus-visible,
+.shipflex-case .flare-end-nav button:focus-visible {
+  outline: 2px solid #0a0a0a;
+  outline-offset: 3px;
+}
+
+@media (max-width: 800px) {
+  .shipflex-case .flare-visual:not(.shipflex-visual--full-product) { height: auto; }
+  .shipflex-case .flare-visual:not(.shipflex-visual--full-product) > img { height: auto; }
+  .shipflex-visual--login { aspect-ratio: 736 / 528; }
+  .shipflex-visual--login > img { top: 4.924%; left: 4.552%; width: 90.897%; transform: none; }
+  .shipflex-visual--dashboard { aspect-ratio: 736 / 550; }
+  .shipflex-visual--dashboard > img { top: 7.091%; left: 4.959%; width: 90.082%; transform: none; }
+  .shipflex-visual--shipments { aspect-ratio: 736 / 620; }
+  .shipflex-visual--shipments > img { top: 4.677%; left: 5.095%; width: 89.81%; transform: none; }
+  .shipflex-visual--navigation { aspect-ratio: 736 / 620; }
+  .shipflex-navigation-main { top: 9.194% !important; left: 10.326%; width: 43.478%; }
+  .shipflex-navigation-detail { top: 9.194% !important; left: 57.065%; width: 32.609%; }
+  .shipflex-visual--fields { aspect-ratio: 736 / 581; }
+  .shipflex-visual--fields > img { top: 9.725%; left: 8.56%; width: 82.88%; }
+  .shipflex-visual--buttons,
+  .shipflex-visual--toggle,
+  .shipflex-visual--controls { aspect-ratio: 736 / 424; }
+  .shipflex-visual--buttons > img { top: 19.575%; left: 15.353%; width: 69.293%; }
+  .shipflex-visual--toggle > img { top: 23.113%; left: 39.13%; width: 21.739%; }
+  .shipflex-visual--controls > img { top: 31.132%; left: 31.658%; width: 36.549%; }
+}
+
+@media (max-width: 560px) {
+  .shipflex-case .shipflex-approach .flare-principles article:nth-child(-n+2),
+  .shipflex-case .shipflex-benefit-card { height: auto; min-height: 0; }
+  .shipflex-visual--full-product { padding: 40px; }
+}
