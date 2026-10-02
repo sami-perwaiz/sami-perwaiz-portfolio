@@ -158,12 +158,12 @@ export default function FaqSection() {
                   <FaqAnswer isOpen={isOpen} answer={item.answer} />
                 </div>
                 <div className="faq-toggle" aria-hidden="true">
-                  <img className="faq-icon faq-icon--plus" src={a.faqPlus} alt="" />
-                  <img className="faq-icon faq-icon--minus" src={a.faqMinus} alt="" />
+                  <img className="faq-icon faq-icon--plus" src={a.faqPlus} alt="" loading="lazy" decoding="async" />
+                  <img className="faq-icon faq-icon--minus" src={a.faqMinus} alt="" loading="lazy" decoding="async" />
                 </div>
               </div>
               <div className="faq-line" aria-hidden="true">
-                <img src={a.faqLine} alt="" />
+                <img src={a.faqLine} alt="" loading="lazy" decoding="async" />
               </div>
             </article>
           );

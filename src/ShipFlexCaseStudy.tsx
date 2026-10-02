@@ -58,7 +58,7 @@ function ImageFrame({ className, children, label }: { className: string; childre
 }
 
 function SourceImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  return <img className={className} src={src} alt={alt} loading="eager" decoding="async" />;
+  return <img className={className} src={src} alt={alt} loading="lazy" decoding="async" />;
 }
 
 function BenefitCard({ title, intro, items }: { title: string; intro: string; items: ReadonlyArray<readonly [string, string]> }) {
@@ -83,7 +83,7 @@ export default function ShipFlexCaseStudy() {
 
   return <div className="flare-case shipflex-case flare-case--home-tail" id="top">
     <header className="flare-case-navbar">
-      <img className="flare-navbar-bg" src={flareAsset("navbar-bg.png")} alt="" aria-hidden="true" />
+      <img className="flare-navbar-bg" src="/assets/optimized/flare/navbar-bg.webp" alt="" aria-hidden="true" width={1024} height={43} />
       <a className="flare-navbar-back" href="/#projects"><img src={flareAsset("back-arrow.svg")} alt="" aria-hidden="true" /><span>Back to Projects</span></a>
       <a className="flare-navbar-hello" href="mailto:samiperwaiz@gmail.com">Say Hello</a>
     </header>

@@ -10,6 +10,7 @@ import {
 import Footer from "./Footer";
 import HomeCta from "./HomeCta";
 import FaqSection from "./FaqSection";
+import ResponsiveImage from "./ResponsiveImage";
 import FlareCaseStudyPage from "./FlareCaseStudy";
 import ShipFlexCaseStudyPage from "./ShipFlexCaseStudy";
 import UnflappableCaseStudyPage from "./UnflappableCaseStudy";
@@ -23,7 +24,7 @@ function Stars() {
     <div className="stars">
       {Array.from({ length: 5 }).map((_, i) => (
         <div className="star" key={i}>
-          <img src={a.star} alt="" />
+          <img src={a.star} alt="" loading="lazy" decoding="async" />
         </div>
       ))}
     </div>
@@ -54,7 +55,7 @@ function Glow({
       >
         <div className="glow-inner" style={{ width: v.innerW, height: v.innerH }}>
           <div className="glow-burst" style={{ inset: v.inset }}>
-            <img src={src} alt="" />
+            <img src={src} alt="" loading="lazy" decoding="async" />
           </div>
         </div>
       </div>
@@ -62,10 +63,37 @@ function Glow({
   );
 }
 
-function Play({ left, top, hidden = false }: { left: number; top: number; hidden?: boolean }) {
+function VideoLoadingSpinner() {
   return (
-    <div className={`play${hidden ? " play--hidden" : ""}`} style={{ left, top }}>
-      <img src={a.play} alt="" />
+    <span className="video-loading-spinner" aria-hidden="true">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <span className="video-loading-spinner__segment" key={index} />
+      ))}
+    </span>
+  );
+}
+
+function Play({
+  left,
+  top,
+  hidden = false,
+  loading = false,
+}: {
+  left: number;
+  top: number;
+  hidden?: boolean;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      className={`play${hidden ? " play--hidden" : ""}${loading ? " play--loading" : ""}`}
+      style={{ left, top }}
+    >
+      {loading ? (
+        <VideoLoadingSpinner />
+      ) : (
+        <img src={a.play} alt="" loading="lazy" decoding="async" />
+      )}
     </div>
   );
 }
@@ -73,11 +101,18 @@ function Play({ left, top, hidden = false }: { left: number; top: number; hidden
 function ProjectsVideoCard() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInteractedRef = useRef(false);
+  const isLoadingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
   const [isThumbnailReady, setIsThumbnailReady] = useState(false);
 
   const hasHoverPointer = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  const updateLoading = (loading: boolean) => {
+    isLoadingRef.current = loading;
+    setIsLoading(loading);
+  };
 
   const seekToFinalFrame = (video: HTMLVideoElement) => {
     if (hasInteractedRef.current || !Number.isFinite(video.duration) || video.duration <= 0) return;
@@ -88,7 +123,7 @@ function ProjectsVideoCard() {
 
   const playVideo = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || isLoadingRef.current || (!video.paused && !video.ended)) return;
 
     if (!hasInteractedRef.current) {
       hasInteractedRef.current = true;
@@ -100,15 +135,20 @@ function ProjectsVideoCard() {
       setHasEnded(false);
     }
 
+    updateLoading(true);
     const playRequest = video.play();
     if (playRequest) {
-      void playRequest.catch(() => setIsPlaying(false));
+      void playRequest.catch(() => {
+        updateLoading(false);
+        setIsPlaying(false);
+      });
     }
   };
 
   const pauseVideo = () => {
     const video = videoRef.current;
     if (!video) return;
+    updateLoading(false);
     video.pause();
   };
 
@@ -130,8 +170,9 @@ function ProjectsVideoCard() {
       className="card-lg teal showcase-video-card"
       role="button"
       tabIndex={0}
-      aria-label={isPlaying ? "Pause Projects preview video" : "Play Projects preview video"}
+      aria-label={isLoading ? "Loading Projects preview video" : isPlaying ? "Pause Projects preview video" : "Play Projects preview video"}
       aria-pressed={isPlaying}
+      aria-busy={isLoading}
       onMouseEnter={() => hasHoverPointer() && playVideo()}
       onMouseLeave={() => hasHoverPointer() && pauseVideo()}
       onClick={() => !hasHoverPointer() && playVideo()}
@@ -160,13 +201,43 @@ function ProjectsVideoCard() {
           setIsThumbnailReady(true);
         }}
         onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        onPlaying={() => {
+          updateLoading(false);
+          setIsPlaying(true);
+        }}
+        onCanPlay={(event) => {
+          if (!event.currentTarget.paused && !event.currentTarget.seeking) updateLoading(false);
+        }}
+        onWaiting={(event) => {
+          if (hasInteractedRef.current && !event.currentTarget.paused && !event.currentTarget.ended) {
+            updateLoading(true);
+          }
+        }}
+        onStalled={(event) => {
+          if (hasInteractedRef.current && !event.currentTarget.paused && !event.currentTarget.ended) {
+            updateLoading(true);
+          }
+        }}
+        onSeeking={(event) => {
+          if (hasInteractedRef.current && !event.currentTarget.paused && !event.currentTarget.ended) {
+            updateLoading(true);
+          }
+        }}
+        onPause={() => {
+          updateLoading(false);
+          setIsPlaying(false);
+        }}
         onEnded={() => {
+          updateLoading(false);
           setHasEnded(true);
           setIsPlaying(false);
         }}
+        onError={() => {
+          updateLoading(false);
+          setIsPlaying(false);
+        }}
       />
-      <Play left={1286} top={30} hidden={isPlaying} />
+      <Play left={1286} top={30} hidden={isPlaying && !isLoading} loading={isLoading} />
     </div>
   );
 }
@@ -174,11 +245,18 @@ function ProjectsVideoCard() {
 function PurpleNavigationVideoCard() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInteractedRef = useRef(false);
+  const isLoadingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
   const [isThumbnailReady, setIsThumbnailReady] = useState(false);
 
   const hasHoverPointer = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  const updateLoading = (loading: boolean) => {
+    isLoadingRef.current = loading;
+    setIsLoading(loading);
+  };
 
   const seekToFinalFrame = (video: HTMLVideoElement) => {
     if (hasInteractedRef.current || !Number.isFinite(video.duration) || video.duration <= 0) return;
@@ -189,7 +267,7 @@ function PurpleNavigationVideoCard() {
 
   const playVideo = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || isLoadingRef.current || (!video.paused && !video.ended)) return;
 
     if (!hasInteractedRef.current) {
       hasInteractedRef.current = true;
@@ -201,15 +279,20 @@ function PurpleNavigationVideoCard() {
       setHasEnded(false);
     }
 
+    updateLoading(true);
     const playRequest = video.play();
     if (playRequest) {
-      void playRequest.catch(() => setIsPlaying(false));
+      void playRequest.catch(() => {
+        updateLoading(false);
+        setIsPlaying(false);
+      });
     }
   };
 
   const pauseVideo = () => {
     const video = videoRef.current;
     if (!video) return;
+    updateLoading(false);
     video.pause();
   };
 
@@ -225,8 +308,9 @@ function PurpleNavigationVideoCard() {
       style={{ background: "#261639" }}
       role="button"
       tabIndex={0}
-      aria-label={isPlaying ? "Purple navigation preview video playing" : "Play purple navigation preview video"}
+      aria-label={isLoading ? "Loading purple navigation preview video" : isPlaying ? "Purple navigation preview video playing" : "Play purple navigation preview video"}
       aria-pressed={isPlaying}
+      aria-busy={isLoading}
       onMouseEnter={() => hasHoverPointer() && playVideo()}
       onMouseLeave={() => hasHoverPointer() && pauseVideo()}
       onClick={() => !hasHoverPointer() && playVideo()}
@@ -255,13 +339,43 @@ function PurpleNavigationVideoCard() {
           setIsThumbnailReady(true);
         }}
         onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        onPlaying={() => {
+          updateLoading(false);
+          setIsPlaying(true);
+        }}
+        onCanPlay={(event) => {
+          if (!event.currentTarget.paused && !event.currentTarget.seeking) updateLoading(false);
+        }}
+        onWaiting={(event) => {
+          if (hasInteractedRef.current && !event.currentTarget.paused && !event.currentTarget.ended) {
+            updateLoading(true);
+          }
+        }}
+        onStalled={(event) => {
+          if (hasInteractedRef.current && !event.currentTarget.paused && !event.currentTarget.ended) {
+            updateLoading(true);
+          }
+        }}
+        onSeeking={(event) => {
+          if (hasInteractedRef.current && !event.currentTarget.paused && !event.currentTarget.ended) {
+            updateLoading(true);
+          }
+        }}
+        onPause={() => {
+          updateLoading(false);
+          setIsPlaying(false);
+        }}
         onEnded={() => {
+          updateLoading(false);
           setHasEnded(true);
           setIsPlaying(false);
         }}
+        onError={() => {
+          updateLoading(false);
+          setIsPlaying(false);
+        }}
       />
-      <Play left={609} top={25} hidden={isPlaying} />
+      <Play left={609} top={25} hidden={isPlaying && !isLoading} loading={isLoading} />
     </div>
   );
 }
@@ -294,8 +408,8 @@ function JobCard({
     >
       <div className="job-inner">
         <div className="job-top">
-          <img className={`job-logo${bordered ? " bordered" : ""}`} src={logo} alt="" />
-          <img className="job-arrow" src={arrow} alt="" />
+          <img className={`job-logo${bordered ? " bordered" : ""}`} src={logo} alt="" loading="lazy" decoding="async" />
+          <img className="job-arrow" src={arrow} alt="" loading="lazy" decoding="async" />
         </div>
         <div>
           <p className="job-name sf sf-med">{name}</p>
@@ -519,7 +633,7 @@ type ToolkitTool = (typeof toolkitTools)[number];
 function ToolItem({ tool }: { tool: ToolkitTool }) {
   return (
     <div className="tool-item">
-      <img className="tool-icon" src={tool.icon} alt={tool.name} />
+      <img className="tool-icon" src={tool.icon} alt={tool.name} loading="lazy" decoding="async" />
       <NavTooltip label={tool.name} />
     </div>
   );
@@ -530,7 +644,7 @@ type ServiceCardData = {
   iconVariant?: "landing";
   title: string;
   description: string;
-  preview: string;
+  previewBase: string;
 };
 
 const serviceCards: ServiceCardData[] = [
@@ -538,32 +652,32 @@ const serviceCards: ServiceCardData[] = [
     icon: a.iconBrand,
     title: "Branding Design",
     description: "We develop brands that resonate and build trust with your customers.",
-    preview: a.serviceBrandingPreview,
+    previewBase: "/assets/optimized/home/serviceBrandingPreview",
   },
   {
     icon: a.iconApp,
     title: "App Design",
     description: "We develop brands that resonate and build trust with your customers.",
-    preview: a.serviceAppPreview,
+    previewBase: "/assets/optimized/home/serviceAppPreview",
   },
   {
     icon: a.iconWeb,
     title: "Website Design",
     description: "We create stunning, user-friendly websites that drive growth.",
-    preview: a.serviceWebPreview,
+    previewBase: "/assets/optimized/home/serviceWebPreview",
   },
   {
     icon: a.iconLanding,
     iconVariant: "landing",
     title: "Landing Page Design",
     description: "We build landing pages that are simple, beautiful, and effective.",
-    preview: a.serviceLandingPreview,
+    previewBase: "/assets/optimized/home/serviceLandingPreview",
   },
   {
     icon: a.iconNocode,
     title: "No-Code Development",
     description: "Quickly develop high-quality solutions using Framer and Webflow.",
-    preview: a.serviceNocodePreview,
+    previewBase: "/assets/optimized/home/serviceNocodePreview",
   },
 ];
 
@@ -596,10 +710,10 @@ function ServiceCard({ card }: { card: ServiceCardData }) {
     <article className="service-card">
       {card.iconVariant === "landing" ? (
         <div className="service-icon landing">
-          <img src={card.icon} alt="" />
+          <img src={card.icon} alt="" loading="lazy" decoding="async" />
         </div>
       ) : (
-        <img className="service-icon" src={card.icon} alt="" />
+        <img className="service-icon" src={card.icon} alt="" loading="lazy" decoding="async" />
       )}
       <div className="service-body">
         <div className="service-copy">
@@ -607,7 +721,14 @@ function ServiceCard({ card }: { card: ServiceCardData }) {
           <p className="sf sf-reg">{card.description}</p>
         </div>
         <div className="service-preview">
-          <img src={card.preview} alt="" />
+          <ResponsiveImage
+            base={card.previewBase}
+            widths={[320, 640, 960]}
+            sizes="302px"
+            sourceWidth={1208}
+            sourceHeight={536}
+            alt=""
+          />
         </div>
       </div>
     </article>
@@ -828,12 +949,6 @@ function ServicesCarousel() {
       startX: touch.clientX,
       startY: touch.clientY,
     };
-
-    if (!canTrackGesture) return;
-
-    isTouchingRef.current = true;
-    setIsTouching(true);
-    stopHoldTimer(true);
   };
 
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
@@ -852,6 +967,12 @@ function ServicesCarousel() {
     if (gesture.axis !== "horizontal") return;
 
     if (motionRef.current !== "idle") return;
+
+    if (!isTouchingRef.current) {
+      isTouchingRef.current = true;
+      setIsTouching(true);
+      stopHoldTimer(true);
+    }
 
     const nextOffset = Math.max(-SERVICE_DRAG_LIMIT, Math.min(SERVICE_DRAG_LIMIT, gesture.deltaX));
     setCarouselDragOffset(nextOffset);
@@ -977,8 +1098,8 @@ function CopyButton() {
 
   return (
     <button type="button" className="copy-wrap" onClick={handleCopy} aria-label="Copy email">
-      <img className={`copy-icon${copied ? "" : " is-visible"}`} src={a.copy} alt="" />
-      <img className={`copy-icon copy-icon--check${copied ? " is-visible" : ""}`} src={a.check} alt="" />
+      <img className={`copy-icon${copied ? "" : " is-visible"}`} src={a.copy} alt="" loading="lazy" decoding="async" />
+      <img className={`copy-icon copy-icon--check${copied ? " is-visible" : ""}`} src={a.check} alt="" loading="lazy" decoding="async" />
     </button>
   );
 }
@@ -989,20 +1110,32 @@ function HomePage() {
       <Nav responsiveHome />
       <div className="page">
 
-      <div className="hero-title" id="hero">
-        <div className="hero-name-row">
-          <p className="hero-im sf sf-reg">I'm</p>
-          <img className="hero-photo" src={a.portrait} alt="" />
-          <p className="hero-sami sf sf-reg">Sami</p>
+      <section className="home-hero">
+        <div className="hero-title" id="hero">
+          <div className="hero-name-row">
+            <p className="hero-im sf sf-reg">I'm</p>
+            <ResponsiveImage
+              className="hero-photo"
+              base="/assets/optimized/home/imgRectangle1410127957"
+              widths={[64, 128, 192]}
+              sizes="58px"
+              sourceWidth={2000}
+              sourceHeight={2000}
+              alt=""
+              loading="eager"
+              fetchPriority="high"
+            />
+            <p className="hero-sami sf sf-reg">Sami</p>
+          </div>
+          <p className="hero-balance sf sf-reg">
+            Designing Digital Products That <span className="black">Balance User</span> Needs and Business{" "}
+            <span className="black">Goals</span>
+          </p>
         </div>
-        <p className="hero-balance sf sf-reg">
-          Designing Digital Products That <span className="black">Balance User</span> Needs and Business{" "}
-          <span className="black">Goals</span>
+        <p className="hero-tag sf sf-reg">
+          I design people-focused interfaces that solve problems and create seamless user experiences.
         </p>
-      </div>
-      <p className="hero-tag sf sf-reg">
-        I design people-focused interfaces that solve problems and create seamless user experiences.
-      </p>
+      </section>
 
       <section className="section vision">
         <div className="section-head vision-head">
@@ -1018,40 +1151,40 @@ function HomePage() {
               className="card-sm"
               style={{ backgroundImage: "linear-gradient(128.1deg, rgb(5, 0, 45) 0%, rgb(4, 8, 72) 100%)" }}
             >
-              <img className="inner-screen" src={a.screen1} alt="" />
+              <ResponsiveImage className="inner-screen" base="/assets/optimized/home/imgSignUpScreen1" widths={[640, 1024, 1280]} sizes="(min-width: 1200px) 608px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
             </div>
             <div
               className="card-sm"
               style={{ backgroundImage: "linear-gradient(128.1deg, rgb(24, 24, 24) 0%, rgb(9, 9, 9) 100%)" }}
             >
-              <img className="inner-screen border-dark" src={a.screen2} alt="" />
+              <ResponsiveImage className="inner-screen border-dark" base="/assets/optimized/home/imgSignUpScreen2" widths={[640, 1024, 1280]} sizes="(min-width: 1200px) 608px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
             </div>
           </div>
           <div
             className="card-lg"
             style={{ backgroundImage: "linear-gradient(128.11deg, rgb(21, 25, 10) 0%, rgb(13, 14, 6) 100%)" }}
           >
-            <img className="inner-lg" src={a.screen3} alt="" />
+            <ResponsiveImage className="inner-lg" base="/assets/optimized/home/imgSignUpScreen3" widths={[768, 1024, 1440, 2560]} sizes="(min-width: 1200px) 1278px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
           </div>
           <div className="row-2">
             <div
               className="card-sm"
               style={{ backgroundImage: "linear-gradient(128.1deg, rgb(255, 243, 248) 0%, rgb(255, 255, 255) 100%)" }}
             >
-              <img className="inner-screen border-f5" src={a.screen4} alt="" />
+              <ResponsiveImage className="inner-screen border-f5" base="/assets/optimized/home/imgSignUpScreen4" widths={[640, 1024, 1280]} sizes="(min-width: 1200px) 608px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
             </div>
             <div
               className="card-sm"
               style={{ backgroundImage: "linear-gradient(128.1deg, rgb(61, 14, 5) 0%, rgb(30, 11, 6) 100%)" }}
             >
-              <img className="inner-screen" src={a.screen5} alt="" />
+              <ResponsiveImage className="inner-screen" base="/assets/optimized/home/imgSignUpScreen5" widths={[640, 1024, 1280]} sizes="(min-width: 1200px) 608px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
             </div>
           </div>
           <div
             className="card-lg"
             style={{ backgroundImage: "linear-gradient(128.11deg, rgb(249, 249, 249) 0%, rgb(238, 238, 238) 100%)" }}
           >
-            <img className="inner-lg6" src={a.screen6} alt="" />
+            <ResponsiveImage className="inner-lg6" base="/assets/optimized/home/imgSignUpScreen6" widths={[768, 1024, 1440, 2560]} sizes="(min-width: 1200px) 1272px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
           </div>
           <div className="row-2">
             <div
@@ -1060,38 +1193,50 @@ function HomePage() {
                 backgroundImage: "linear-gradient(217.25deg, rgb(247, 247, 247) 12.079%, rgb(240, 240, 240) 87.921%)",
               }}
             >
-              <img className="inner-screen" src={a.dashboard3} alt="" />
+              <ResponsiveImage className="inner-screen" base="/assets/optimized/home/imgDashboard3" widths={[640, 1024, 1280]} sizes="(min-width: 1200px) 608px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
             </div>
             <div
               className="card-sm"
               style={{ backgroundImage: "linear-gradient(128.1deg, rgb(242, 242, 242) 0%, rgb(249, 249, 249) 100%)" }}
             >
-              <img className="inner-screen border-ea" src={a.screen7} alt="" />
+              <ResponsiveImage className="inner-screen border-ea" base="/assets/optimized/home/imgSignUpScreen7" widths={[640, 1024, 1280]} sizes="(min-width: 1200px) 608px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
             </div>
           </div>
           <ProjectsVideoCard />
           <div className="grid-4">
             <div className="cell" style={{ background: "#fafafa" }}>
-              <img src={a.image69} alt="" style={{ position: "absolute", left: 62, top: 125, width: 218, height: 219, objectFit: "cover" }} />
+              <ResponsiveImage
+                base="/assets/optimized/home/imgImage69"
+                widths={[256, 512, 768]}
+                sizes="218px"
+                sourceWidth={1424}
+                sourceHeight={1430}
+                alt=""
+                style={{ position: "absolute", left: 62, top: 125, width: 218, height: 219, objectFit: "cover" }}
+              />
               <div className="cross-h" style={{ top: 106 }}>
-                <img src={a.line519} alt="" />
+                <img src={a.line519} alt="" loading="lazy" decoding="async" />
               </div>
               <div className="cross-h" style={{ top: 83 }}>
-                <img src={a.line519} alt="" />
+                <img src={a.line519} alt="" loading="lazy" decoding="async" />
               </div>
               <div className="cross-h" style={{ top: 362 }}>
-                <img src={a.line519} alt="" />
+                <img src={a.line519} alt="" loading="lazy" decoding="async" />
               </div>
               <div className="cross-h" style={{ top: 385 }}>
-                <img src={a.line519} alt="" />
+                <img src={a.line519} alt="" loading="lazy" decoding="async" />
               </div>
               <div className="cross-v">
                 <div className="cross-v-inner">
-                  <img src={a.line521} alt="" />
+                  <img src={a.line521} alt="" loading="lazy" decoding="async" />
                 </div>
               </div>
-              <img
-                src={a.image565}
+              <ResponsiveImage
+                base="/assets/optimized/home/imgImage565"
+                widths={[320, 640, 800]}
+                sizes="248px"
+                sourceWidth={1660}
+                sourceHeight={2050}
                 alt=""
                 style={{
                   position: "absolute",
@@ -1109,7 +1254,7 @@ function HomePage() {
               className="cell"
               style={{ backgroundImage: "linear-gradient(128.1deg, rgb(249, 249, 249) 0%, rgb(238, 238, 238) 100%)" }}
             >
-              <img className="inner-screen" src={a.image559} alt="" />
+              <img className="inner-screen" src={a.image559} alt="" loading="lazy" decoding="async" />
             </div>
             <div
               className="cell"
@@ -1119,9 +1264,13 @@ function HomePage() {
               }}
             >
               <Glow src={a.ellipse79} variant="b" style={{ left: -108.42, top: 427.43, width: 377.335, height: 283.142 }} />
-              <img
+              <ResponsiveImage
                 className="inner-screen border-f5"
-                src={a.image564}
+                base="/assets/optimized/home/imgImage564"
+                widths={[640, 1280]}
+                sizes="588px"
+                sourceWidth={2560}
+                sourceHeight={984}
                 alt=""
                 style={{ width: 588, height: 226, borderRadius: 8 }}
               />
@@ -1140,7 +1289,15 @@ function HomePage() {
         </div>
         <div className="exp-body">
           <div className="exp-top">
-            <img className="exp-photo" src={a.experiencePhoto} alt="" />
+            <ResponsiveImage
+              className="exp-photo"
+              base="/assets/optimized/home/imgRectangle1410127969"
+              widths={[400, 800, 1200]}
+              sizes="(min-width: 1200px) 346px, calc(100vw - 64px)"
+              sourceWidth={1254}
+              sourceHeight={1254}
+              alt=""
+            />
             <div className="exp-cards">
               <div className="exp-row">
                 <JobCard
@@ -1205,25 +1362,25 @@ function HomePage() {
         </div>
         <div className="gallery-grid">
           <div className="g-wide">
-            <img src={a.gallery1} alt="" />
+            <ResponsiveImage base="/assets/optimized/gallery/imgRectangle1410127900" widths={[640, 1024, 1200, 1800]} sizes="(min-width: 1200px) 888px, calc(100vw - 40px)" sourceWidth={4096} sourceHeight={2286} alt="" avif />
           </div>
           <div className="g-cell">
-            <img src={a.gallery2} alt="" />
+            <ResponsiveImage base="/assets/optimized/gallery/imgRectangle1410127907" widths={[480, 900, 1200]} sizes="(min-width: 1200px) 436px, (min-width: 768px) calc(50vw - 32px), calc(100vw - 40px)" sourceWidth={4096} sourceHeight={4096} alt="" avif />
           </div>
           <div className="g-cell">
-            <img src={a.gallery4} alt="" />
+            <ResponsiveImage base="/assets/optimized/gallery/imgRectangle1410127908" widths={[480, 900, 1200]} sizes="(min-width: 1200px) 436px, (min-width: 768px) calc(50vw - 32px), calc(100vw - 40px)" sourceWidth={4096} sourceHeight={3277} alt="" avif />
           </div>
           <div className="g-cell">
-            <img src={a.gallery3} alt="" />
+            <ResponsiveImage base="/assets/optimized/gallery/imgRectangle1410127902" widths={[480, 900, 1200]} sizes="(min-width: 1200px) 436px, (min-width: 768px) calc(50vw - 32px), calc(100vw - 40px)" sourceWidth={2508} sourceHeight={2508} alt="" avif />
           </div>
           <div className="g-cell">
-            <img src={a.gallery5} alt="" />
+            <ResponsiveImage base="/assets/optimized/gallery/imgRectangle1410127904" widths={[480, 900, 1200]} sizes="(min-width: 1200px) 436px, (min-width: 768px) calc(50vw - 32px), calc(100vw - 40px)" sourceWidth={2508} sourceHeight={2508} alt="" avif />
           </div>
           <div className="g-wide">
-            <img className="g-crop6" src={a.gallery6} alt="" />
+            <ResponsiveImage className="g-crop6" base="/assets/optimized/gallery/imgRectangle1410127906" widths={[640, 1024, 1200, 1800]} sizes="(min-width: 1200px) 888px, calc(100vw - 40px)" sourceWidth={3344} sourceHeight={1882} alt="" avif />
           </div>
           <div className="g-cell">
-            <img className="g-crop7" src={a.gallery7} alt="" />
+            <ResponsiveImage className="g-crop7" base="/assets/optimized/gallery/imgRectangle1410127910" widths={[480, 900, 1200]} sizes="(min-width: 1200px) 436px, (min-width: 768px) calc(50vw - 32px), calc(100vw - 40px)" sourceWidth={2172} sourceHeight={2896} alt="" avif />
           </div>
         </div>
       </section>
@@ -1239,7 +1396,7 @@ function HomePage() {
           <div className="project-row">
             <a className="project" href="/projects/flare" aria-label="Read the Flare case study">
               <div className="thumb">
-                <img className="thumb-bg" src={a.flareThumb} alt="" />
+                <img className="thumb-bg" src={a.flareThumb} alt="" width={1024} height={626} loading="lazy" decoding="async" />
               </div>
               <div>
                 <p className="project-title sf sf-med">Flare</p>
@@ -1248,7 +1405,7 @@ function HomePage() {
             </a>
             <a className="project" href="/projects/shipflex" aria-label="Read the ShipFlex case study">
               <div className="thumb">
-                <img className="thumb-bg" src={a.shipFlexThumb} alt="" />
+                <img className="thumb-bg" src={a.shipFlexThumb} alt="" width={1024} height={626} loading="lazy" decoding="async" />
               </div>
               <div>
                 <p className="project-title sf sf-med">ShipFlex</p>
@@ -1259,7 +1416,7 @@ function HomePage() {
           <div className="project-row">
             <a className="project" href="/projects/unflappable" aria-label="Read the Unflappable case study">
               <div className="thumb">
-                <img className="thumb-bg" src={a.unflappableThumb} alt="" />
+                <img className="thumb-bg" src={a.unflappableThumb} alt="" width={1024} height={626} loading="lazy" decoding="async" />
               </div>
               <div>
                 <p className="project-title sf sf-med">Unflappable</p>
@@ -1268,7 +1425,7 @@ function HomePage() {
             </a>
             <a className="project" href="/projects/axishealth" aria-label="Read the AxisHealth case study">
               <div className="thumb">
-                <img className="thumb-bg" src={a.axisHealthThumb} alt="" />
+                <img className="thumb-bg" src={a.axisHealthThumb} alt="" width={1024} height={626} loading="lazy" decoding="async" />
               </div>
               <div>
                 <p className="project-title sf sf-med">AxisHealth</p>
@@ -1331,8 +1488,8 @@ function HomePage() {
               <div className="t-foot">
                 <div className="t-person">
                   <div style={{ position: "relative", width: 36, height: 36 }}>
-                    <img className="t-avatar" src={a.portrait} alt="" style={{ position: "absolute", inset: 0 }} />
-                    <img className="t-avatar" src={a.logoAjencia} alt="" style={{ position: "absolute", inset: 0 }} />
+                    <img className="t-avatar" src={a.portrait} alt="" width={192} height={192} loading="lazy" decoding="async" style={{ position: "absolute", inset: 0 }} />
+                    <img className="t-avatar" src={a.logoAjencia} alt="" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0 }} />
                   </div>
                   <div className="t-meta">
                     <p className="t-role sf sf-reg">Company</p>
@@ -1351,7 +1508,7 @@ function HomePage() {
               </p>
               <div className="t-foot">
                 <div className="t-person">
-                  <img className="t-avatar" src={a.avatar2} alt="" />
+                  <img className="t-avatar" src={a.avatar2} alt="" loading="lazy" decoding="async" />
                   <div className="t-meta">
                     <p className="t-role sf sf-reg">Client</p>
                     <p className="t-name sf sf-reg">Green Micheel</p>
@@ -1371,7 +1528,7 @@ function HomePage() {
               </p>
               <div className="t-foot">
                 <div className="t-person">
-                  <img className="t-avatar" src={a.avatar3} alt="" />
+                  <img className="t-avatar" src={a.avatar3} alt="" loading="lazy" decoding="async" />
                   <div className="t-meta">
                     <p className="t-role sf sf-reg">CEO</p>
                     <p className="t-name sf sf-reg">Huzaifa Sheikh</p>
@@ -1389,7 +1546,7 @@ function HomePage() {
               </p>
               <div className="t-foot">
                 <div className="t-person">
-                  <img className="t-avatar" src={a.avatar4} alt="" />
+                  <img className="t-avatar" src={a.avatar4} alt="" width={128} height={128} loading="lazy" decoding="async" />
                   <div className="t-meta">
                     <p className="t-role sf sf-reg">Full-Stack Engineer</p>
                     <p className="t-name sf sf-reg">Rimsha Shafiq</p>
@@ -1415,7 +1572,7 @@ function HomePage() {
                 aria-label={externalSocialLinks.linkedin.label}
               >
                 <div className="social-item-inner">
-                  <img className="logo" src={a.linkedin} alt="" />
+                  <img className="logo" src={a.linkedin} alt="" loading="lazy" decoding="async" />
                   <span className="sf sf-med">LinkedIn.com</span>
                   <ExternalArrow />
                 </div>
@@ -1428,7 +1585,7 @@ function HomePage() {
                 aria-label={externalSocialLinks.x.label}
               >
                 <div className="social-item-inner">
-                  <img className="logo round" src={a.iconX} alt="" />
+                  <img className="logo round" src={a.iconX} alt="" loading="lazy" decoding="async" />
                   <span className="sf sf-med">X.com</span>
                   <ExternalArrow />
                 </div>
@@ -1443,7 +1600,7 @@ function HomePage() {
                 aria-label={externalSocialLinks.dribbble.label}
               >
                 <div className="social-item-inner">
-                  <img className="logo round" src={a.iconDribbble} alt="" />
+                  <img className="logo round" src={a.iconDribbble} alt="" loading="lazy" decoding="async" />
                   <span className="sf sf-med">Dribbble.com</span>
                   <ExternalArrow />
                 </div>
@@ -1456,7 +1613,7 @@ function HomePage() {
                 aria-label={externalSocialLinks.instagram.label}
               >
                 <div className="social-item-inner">
-                  <img className="logo" src={a.instagram} alt="" />
+                  <img className="logo" src={a.instagram} alt="" loading="lazy" decoding="async" />
                   <span className="sf sf-med">Instagram.com</span>
                   <ExternalArrow />
                 </div>
@@ -1470,14 +1627,14 @@ function HomePage() {
               aria-label={externalSocialLinks.upwork.label}
             >
               <div className="social-item-inner">
-                <img className="logo round" src={a.iconUpwork} alt="" />
+                <img className="logo round" src={a.iconUpwork} alt="" loading="lazy" decoding="async" />
                 <span className="sf sf-med">Upwork.com</span>
                 <ExternalArrow />
               </div>
             </a>
             <div className="social-item full">
               <div className="social-item-inner">
-                <img className="logo round" src={a.iconEmail} alt="" />
+                <img className="logo round" src={a.iconEmail} alt="" loading="lazy" decoding="async" />
                 <span className="sf sf-reg">{EMAIL}</span>
                 <CopyButton />
               </div>
@@ -1586,10 +1743,10 @@ export function FlareCaseStudy() {
         </section>
 
         <section className="flare-hero-art" aria-label="Flare application preview">
-          <img className="flare-hero-gradient" src={a.image616} alt="" />
+          <img className="flare-hero-gradient" src={a.image616} alt="" loading="lazy" decoding="async" />
           <div className="flare-hero-screens">
-            <img src={a.image567} alt="Flare home screen" />
-            <img src={a.image568} alt="Flare live transcription screen" />
+            <img src={a.image567} alt="Flare home screen" loading="lazy" decoding="async" />
+            <img src={a.image568} alt="Flare live transcription screen" loading="lazy" decoding="async" />
           </div>
         </section>
 
@@ -1612,7 +1769,7 @@ export function FlareCaseStudy() {
                 <p>{section.copy}</p>
               </div>
               <div className={`case-screen-panel case-screen-panel--${section.tone}`}>
-                <img src={section.image} alt={`${section.title} in the Flare app`} />
+                <img src={section.image} alt={`${section.title} in the Flare app`} loading="lazy" decoding="async" />
               </div>
             </article>
           ))}
@@ -1702,9 +1859,9 @@ export function FlareCaseStudy() {
         </section>
 
         <section className="flare-closing-art" aria-label="Flare mobile experience">
-          <img src={a.image617} alt="" />
-          <img src={a.image567} alt="Flare communication coach home screen" />
-          <img src={a.image568} alt="Flare communication coach transcription screen" />
+          <img src={a.image617} alt="" loading="lazy" decoding="async" />
+          <img src={a.image567} alt="Flare communication coach home screen" loading="lazy" decoding="async" />
+          <img src={a.image568} alt="Flare communication coach transcription screen" loading="lazy" decoding="async" />
         </section>
       </main>
       <Footer />

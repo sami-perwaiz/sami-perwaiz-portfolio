@@ -616,6 +616,51 @@ button {
   opacity: 0;
 }
 
+.showcase-video-card .play--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-loading-spinner {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  animation: video-spinner-rotate 900ms linear infinite;
+}
+
+.video-loading-spinner__segment {
+  position: absolute;
+  top: 0;
+  left: 8.6665px;
+  width: 2.667px;
+  height: 6.667px;
+  border-radius: 4px;
+  background: rgba(250, 250, 250, 0.6);
+  transform-origin: 50% 10px;
+}
+
+.video-loading-spinner__segment:nth-child(1) { opacity: 1; transform: rotate(0deg); }
+.video-loading-spinner__segment:nth-child(2) { opacity: 0.15; transform: rotate(45deg); }
+.video-loading-spinner__segment:nth-child(3) { opacity: 0.27; transform: rotate(90deg); }
+.video-loading-spinner__segment:nth-child(4) { opacity: 0.39; transform: rotate(135deg); }
+.video-loading-spinner__segment:nth-child(5) { opacity: 0.51; transform: rotate(180deg); }
+.video-loading-spinner__segment:nth-child(6) { opacity: 0.63; transform: rotate(225deg); }
+.video-loading-spinner__segment:nth-child(7) { opacity: 0.75; transform: rotate(270deg); }
+.video-loading-spinner__segment:nth-child(8) { opacity: 0.87; transform: rotate(315deg); }
+
+@keyframes video-spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-loading-spinner {
+    animation: none;
+  }
+}
+
 .play {
   position: absolute;
   width: 24px;
@@ -850,7 +895,9 @@ button {
 }
 
 .gallery-grid > .g-wide > img,
-.gallery-grid > .g-cell > img {
+.gallery-grid > .g-cell > img,
+.gallery-grid > .g-wide > picture > img,
+.gallery-grid > .g-cell > picture > img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -2954,33 +3001,11 @@ button {
   }
 
   .page .vision-head,
-  .page .experience-head p,
   .page .gallery-head p,
   .page .projects-head p,
   .page .faq-head p,
   .page .t-head p {
     width: min(100%, 607px);
-  }
-
-  .page .exp-top {
-    display: grid;
-    grid-template-columns: minmax(0, 0.39fr) minmax(0, 0.61fr);
-    align-items: center;
-  }
-
-  .page .exp-photo {
-    width: 100%;
-    max-width: 346px;
-    justify-self: center;
-  }
-
-  .page .exp-cards {
-    min-width: 0;
-  }
-
-  .page .job-name,
-  .page .job-role {
-    white-space: normal;
   }
 
   .page .gallery-grid {
@@ -2998,52 +3023,6 @@ button {
 
   .page .service-card {
     width: min(350px, calc(50vw - var(--home-gutter)));
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  .page #about {
-    scroll-margin-top: 128px;
-  }
-
-  .page .exp-top {
-    display: grid;
-    grid-template-columns: minmax(0, 0.39fr) minmax(0, 0.61fr);
-    align-items: center;
-  }
-
-  .page .exp-photo {
-    width: 100%;
-    max-width: 346px;
-    justify-self: center;
-  }
-
-  .page .exp-cards {
-    min-width: 0;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .page .job-card {
-    height: 169px;
-  }
-}
-
-@media (max-width: 767px) {
-  .page .exp-top {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 32px;
-  }
-
-  .page .exp-photo {
-    width: min(100%, 346px);
-    align-self: center;
-  }
-
-  .page .exp-cards {
-    width: 100%;
   }
 }
 
@@ -3099,10 +3078,6 @@ button {
     margin-top: 120px;
   }
 
-  .page #about {
-    scroll-margin-top: 116px;
-  }
-
   .page .vision,
   .page .experience,
   .page .gallery,
@@ -3150,14 +3125,6 @@ button {
   .page .grid-4 .cell .play {
     top: 16px !important;
     right: 16px;
-  }
-
-  .page .exp-body {
-    gap: 32px;
-  }
-
-  .page .stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .page .project-list,
@@ -3273,24 +3240,6 @@ button {
 }
 
 @media (max-width: 600px) {
-  .page .exp-row {
-    flex-direction: column;
-  }
-
-  .page .job-card {
-    width: 100%;
-    flex: none;
-  }
-
-  .page .stats {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: repeat(3, 136px);
-  }
-
-  .page .stat.wide {
-    grid-column: auto;
-  }
-
   .page .gallery-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3359,5 +3308,140 @@ button {
 
   .page .social-item-inner span {
     font-size: 16px;
+  }
+}
+
+/* Home experience section: tablet, stacked, and mobile states. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .page #about {
+    scroll-margin-top: 128px;
+  }
+
+  .page .exp-top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.39fr) minmax(0, 0.61fr);
+    align-items: start;
+  }
+
+  .page .exp-photo {
+    width: 100%;
+    max-width: 346px;
+    justify-self: start;
+  }
+
+  .page .exp-cards {
+    min-width: 0;
+  }
+
+  .page .job-card {
+    height: 169px;
+  }
+
+  .page .job-name,
+  .page .job-role {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 767px) {
+  .page #about {
+    scroll-margin-top: 116px;
+  }
+
+  .page .exp-body {
+    gap: 32px;
+  }
+
+  .page .exp-top {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+  }
+
+  .page .exp-photo {
+    width: min(100%, 346px);
+    align-self: center;
+  }
+
+  .page .exp-cards {
+    width: 100%;
+  }
+
+  .page .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .page .exp-row {
+    flex-direction: column;
+  }
+
+  .page .job-card {
+    width: 100%;
+    flex: none;
+  }
+
+  .page .stats {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(3, 136px);
+  }
+
+  .page .stat.wide {
+    grid-column: auto;
+  }
+}
+
+/* Home hero viewport positioning. */
+.home-hero {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  place-items: center;
+}
+
+.page .home-hero .hero-title {
+  position: relative;
+  top: auto;
+  left: auto;
+  margin: 0;
+}
+
+.page .home-hero .hero-tag {
+  position: absolute;
+  top: auto;
+  right: auto;
+  bottom: 58px;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+@media (min-width: 1440px) {
+  .page {
+    --home-hero-height-offset: max(0px, calc(100vh - 1024px));
+    --home-hero-height-offset: max(0px, calc(100dvh - 1024px));
+    height: calc(16870px + var(--home-hero-height-offset));
+  }
+
+  .page > .section,
+  .page > .social,
+  .page > .home-page-tail {
+    transform: translateY(var(--home-hero-height-offset));
+  }
+}
+
+@media (max-width: 1439px) {
+  .page {
+    padding-top: 0;
+  }
+}
+
+@media (max-height: 620px) {
+  .home-hero {
+    min-height: 620px;
   }
 }

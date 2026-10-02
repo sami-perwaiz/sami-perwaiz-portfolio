@@ -86,7 +86,7 @@ export default function AxisHealthCaseStudy() {
 
   return <div className="flare-case axishealth-case flare-case--home-tail" id="top">
     <header className="flare-case-navbar">
-      <img className="flare-navbar-bg" src={flareAsset("navbar-bg.png")} alt="" aria-hidden="true" />
+      <img className="flare-navbar-bg" src="/assets/optimized/flare/navbar-bg.webp" alt="" aria-hidden="true" width={1024} height={43} />
       <a className="flare-navbar-back" href="/#projects"><img src={flareAsset("back-arrow.svg")} alt="" aria-hidden="true" /><span>Back to Projects</span></a>
       <a className="flare-navbar-hello" href="mailto:samiperwaiz@gmail.com">Say Hello</a>
     </header>

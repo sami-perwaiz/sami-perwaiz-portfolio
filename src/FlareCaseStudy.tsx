@@ -3,15 +3,16 @@ import "./flare-case-study.css";
 import CaseStudyHomeTail from "./CaseStudyHomeTail";
 
 const asset = (name: string) => `/assets/flare-case-study/${name}`;
+const optimizedImage = (name: string) => `/assets/optimized/flare/${name}.webp`;
 
 const images = {
-  splash: asset("flare-20106.png"), onboardingLeft: asset("flare-20111.png"), onboardingRight: asset("flare-20112.png"),
-  onboardingFinal: asset("flare-20114.png"), authLeft: asset("flare-20119.png"), authRight: asset("flare-20120.png"),
-  home: asset("flare-20125.png"), homeGrid: asset("flare-20127.png"), coaching: asset("flare-20132.png"),
-  completion: asset("flare-20134.png"), history: asset("flare-20139.png"), deleteDialog: asset("flare-20141.png"),
-  insights: asset("flare-20146.png"), profile: asset("flare-20151.png"), systemType: asset("flare-20195.png"),
-  systemColor: asset("flare-20196.png"), fields: asset("flare-20198.png"), buttons: asset("flare-20200.png"),
-  toggles: asset("flare-20202.png"), cards: asset("flare-20204.png"),
+  splash: optimizedImage("flare-20106"), onboardingLeft: optimizedImage("flare-20111"), onboardingRight: optimizedImage("flare-20112"),
+  onboardingFinal: optimizedImage("flare-20114"), authLeft: optimizedImage("flare-20119"), authRight: optimizedImage("flare-20120"),
+  home: optimizedImage("flare-20125"), homeGrid: optimizedImage("flare-20127"), coaching: optimizedImage("flare-20132"),
+  completion: optimizedImage("flare-20134"), history: optimizedImage("flare-20139"), deleteDialog: optimizedImage("flare-20141"),
+  insights: optimizedImage("flare-20146"), profile: optimizedImage("flare-20151"), systemType: optimizedImage("flare-20195"),
+  systemColor: optimizedImage("flare-20196"), fields: optimizedImage("flare-20198"), buttons: optimizedImage("flare-20200"),
+  toggles: optimizedImage("flare-20202"), cards: optimizedImage("flare-20204"),
 } as const;
 
 const metadata = [
@@ -60,7 +61,7 @@ export default function FlareCaseStudy() {
 
   return <div className="flare-case flare-case--home-tail" id="top">
     <header className="flare-case-navbar">
-      <img className="flare-navbar-bg" src={asset("navbar-bg.png")} alt="" aria-hidden="true" />
+      <img className="flare-navbar-bg" src={optimizedImage("navbar-bg")} alt="" aria-hidden="true" width={1024} height={43} />
       <a className="flare-navbar-back" href="/#projects"><img src={asset("back-arrow.svg")} alt="" aria-hidden="true" /><span>Back to Projects</span></a>
       <a className="flare-navbar-hello" href="mailto:samiperwaiz@gmail.com">Say Hello</a>
     </header>
