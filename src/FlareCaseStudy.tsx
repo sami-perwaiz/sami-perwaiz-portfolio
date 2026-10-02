@@ -1,6 +1,7 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import "./flare-case-study.css";
 import CaseStudyHomeTail from "./CaseStudyHomeTail";
+import useNearViewportMedia from "./useNearViewportMedia";
 
 const asset = (name: string) => `/assets/flare-case-study/${name}`;
 const optimizedImage = (name: string) => `/assets/optimized/flare/${name}.webp`;
@@ -37,6 +38,23 @@ function ImageFrame({ className, children }: { className: string; children: Reac
 
 function SourceImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
   return <img className={className} src={src} alt={alt} loading="lazy" decoding="async" />;
+}
+
+function ProductVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const shouldLoadMedia = useNearViewportMedia(videoRef);
+
+  return <video
+    ref={videoRef}
+    className="flare-product-video"
+    controls
+    preload="none"
+    playsInline
+    poster={shouldLoadMedia ? "/assets/video-posters/flare-product-demo.webp" : undefined}
+    src={asset("flare-product-demo.m4v")}
+  >
+    Your browser does not support embedded video playback.
+  </video>;
 }
 
 function BenefitCard({ title, intro, items }: { title: string; intro: string; items: ReadonlyArray<readonly [string, string]> }) {
@@ -124,10 +142,7 @@ export default function FlareCaseStudy() {
         <ImageFrame className="flare-visual--cards"><SourceImage src={images.cards} alt="Flare coaching style card components" /></ImageFrame>
 
         <figure className="flare-video-frame" aria-label="Flare product video preview">
-          <video className="flare-product-video" controls preload="metadata" playsInline>
-            <source src={asset("flare-product-demo.m4v")} type="video/mp4" />
-            Your browser does not support embedded video playback.
-          </video>
+          <ProductVideo />
         </figure>
         <p className="flare-note"><strong>Note:</strong> Maintaining a consistent design language and reusable interface patterns ensures a seamless user experience while supporting future product scalability and feature expansion.</p>
 

@@ -18,6 +18,7 @@ import AxisHealthCaseStudyPage from "./AxisHealthCaseStudy";
 import { a } from "./assets";
 import { externalSocialLinks } from "./externalLinks";
 import { isHomeSectionId, scrollToHomeSection, type HomeSectionId } from "./homeSectionNavigation";
+import useNearViewportMedia from "./useNearViewportMedia";
 
 function Stars() {
   return (
@@ -99,13 +100,16 @@ function Play({
 }
 
 function ProjectsVideoCard() {
+  const videoSource = "/assets/projects-card-preview.mov";
+  const videoPoster = "/assets/video-posters/projects-card-preview.webp";
   const videoRef = useRef<HTMLVideoElement>(null);
+  const shouldLoadMedia = useNearViewportMedia(videoRef);
   const hasInteractedRef = useRef(false);
   const isLoadingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
-  const [isThumbnailReady, setIsThumbnailReady] = useState(false);
+  const [isThumbnailReady, setIsThumbnailReady] = useState(true);
 
   const hasHoverPointer = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
@@ -181,11 +185,12 @@ function ProjectsVideoCard() {
       <video
         ref={videoRef}
         className={`showcase-video${isThumbnailReady ? " showcase-video--ready" : ""}`}
-        src="/assets/projects-card-preview.mov"
+        src={videoSource}
+        poster={shouldLoadMedia ? videoPoster : undefined}
         muted
         playsInline
         controls={false}
-        preload="metadata"
+        preload="none"
         disablePictureInPicture
         onLoadedMetadata={(event) => seekToFinalFrame(event.currentTarget)}
         onDurationChange={(event) => seekToFinalFrame(event.currentTarget)}
@@ -243,13 +248,16 @@ function ProjectsVideoCard() {
 }
 
 function PurpleNavigationVideoCard() {
+  const videoSource = "/assets/purple-navigation-card-preview.mov";
+  const videoPoster = "/assets/video-posters/purple-navigation-card-preview.webp";
   const videoRef = useRef<HTMLVideoElement>(null);
+  const shouldLoadMedia = useNearViewportMedia(videoRef);
   const hasInteractedRef = useRef(false);
   const isLoadingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
-  const [isThumbnailReady, setIsThumbnailReady] = useState(false);
+  const [isThumbnailReady, setIsThumbnailReady] = useState(true);
 
   const hasHoverPointer = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
@@ -319,11 +327,12 @@ function PurpleNavigationVideoCard() {
       <video
         ref={videoRef}
         className={`showcase-video${isThumbnailReady ? " showcase-video--ready" : ""}`}
-        src="/assets/purple-navigation-card-preview.mov"
+        src={videoSource}
+        poster={shouldLoadMedia ? videoPoster : undefined}
         muted
         playsInline
         controls={false}
-        preload="metadata"
+        preload="none"
         disablePictureInPicture
         onLoadedMetadata={(event) => seekToFinalFrame(event.currentTarget)}
         onDurationChange={(event) => seekToFinalFrame(event.currentTarget)}
