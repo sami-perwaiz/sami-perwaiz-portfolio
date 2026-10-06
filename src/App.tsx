@@ -714,6 +714,7 @@ function ServicesCarousel() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const sequenceRef = useRef<HTMLDivElement>(null);
   const sequenceWidthRef = useRef(0);
+  const scrollPositionRef = useRef(0);
   const animationFrameRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
   const resumeTimerRef = useRef<number | null>(null);
@@ -737,16 +738,18 @@ function ServicesCarousel() {
     }, delay);
   };
 
-  const normalizeScrollPosition = useCallback(() => {
+  const setScrollPosition = useCallback((position: number) => {
     const viewport = viewportRef.current;
     const sequenceWidth = sequenceWidthRef.current;
-    if (!viewport || sequenceWidth <= 0 || reducedMotionRef.current) return;
+    if (!viewport || sequenceWidth <= 0 || reducedMotionRef.current) return position;
 
-    if (viewport.scrollLeft <= sequenceWidth * 0.25) {
-      viewport.scrollLeft += sequenceWidth;
-    } else if (viewport.scrollLeft >= sequenceWidth * 1.75) {
-      viewport.scrollLeft -= sequenceWidth;
-    }
+    let nextPosition = position;
+    if (nextPosition <= sequenceWidth * 0.25) nextPosition += sequenceWidth;
+    else if (nextPosition >= sequenceWidth * 1.75) nextPosition -= sequenceWidth;
+
+    scrollPositionRef.current = nextPosition;
+    viewport.scrollLeft = nextPosition;
+    return nextPosition;
   }, []);
 
   const updateSequenceMetrics = useCallback(() => {
@@ -755,12 +758,14 @@ function ServicesCarousel() {
     if (!viewport || !sequence) return;
 
     const previousWidth = sequenceWidthRef.current;
-    const previousPhase = previousWidth > 0 ? (viewport.scrollLeft % previousWidth) / previousWidth : 0;
+    const previousPhase = previousWidth > 0 ? (scrollPositionRef.current % previousWidth) / previousWidth : 0;
     const sequenceWidth = sequence.getBoundingClientRect().width;
     if (sequenceWidth <= 0) return;
 
     sequenceWidthRef.current = sequenceWidth;
-    viewport.scrollLeft = reducedMotionRef.current ? 0 : sequenceWidth * (1 + previousPhase);
+    const nextPosition = reducedMotionRef.current ? 0 : sequenceWidth * (1 + previousPhase);
+    scrollPositionRef.current = nextPosition;
+    viewport.scrollLeft = nextPosition;
   }, []);
 
   useLayoutEffect(() => {
@@ -784,8 +789,7 @@ function ServicesCarousel() {
         !isManualScrollingRef.current
       ) {
         const elapsed = Math.min(time - previousTime, 50);
-        viewport.scrollLeft += (SERVICE_SCROLL_SPEED * elapsed) / 1000;
-        normalizeScrollPosition();
+        setScrollPosition(scrollPositionRef.current + (SERVICE_SCROLL_SPEED * elapsed) / 1000);
       }
 
       animationFrameRef.current = window.requestAnimationFrame(animate);
@@ -808,7 +812,7 @@ function ServicesCarousel() {
       if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
       clearResumeTimer();
     };
-  }, [normalizeScrollPosition, updateSequenceMetrics]);
+  }, [setScrollPosition, updateSequenceMetrics]);
 
   const handlePointerEnter = (event: React.PointerEvent<HTMLDivElement>) => {
     if (
@@ -835,8 +839,19 @@ function ServicesCarousel() {
   };
 
   const handleScroll = () => {
-    normalizeScrollPosition();
-    if (isManualScrollingRef.current && !isTouchingRef.current) scheduleAutoResume();
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const isNativeInteraction =
+      isManualScrollingRef.current ||
+      isTouchingRef.current ||
+      Math.abs(viewport.scrollLeft - scrollPositionRef.current) > 1.5;
+
+    if (isNativeInteraction) {
+      isManualScrollingRef.current = true;
+      setScrollPosition(viewport.scrollLeft);
+      if (!isTouchingRef.current) scheduleAutoResume();
+    }
   };
 
   const handleTouchStart = () => {
