@@ -5,18 +5,19 @@ import CaseStudyHomeTail from "./CaseStudyHomeTail";
 
 const flareAsset = (name: string) => `/assets/flare-case-study/${name}`;
 const axisAsset = (name: string) => `/assets/axishealth-case-study/${name}`;
+const optimizedAxisAsset = (name: string) => `/assets/optimized/case-studies/axishealth/${name}`;
 
 const images = {
   profileLeft: axisAsset("axishealth-8511.webp"),
   profileRight: axisAsset("axishealth-8512.webp"),
   onboardingLeft: axisAsset("axishealth-8514.webp"),
   onboardingRight: axisAsset("axishealth-8515.webp"),
-  dashboard: axisAsset("axishealth-8520.webp"),
-  nutrition: axisAsset("axishealth-8525.webp"),
+  dashboard: optimizedAxisAsset("axishealth-8520-960.webp"),
+  nutrition: optimizedAxisAsset("axishealth-8525-960.webp"),
   exercise: axisAsset("axishealth-8530.webp"),
   peptides: axisAsset("axishealth-8535.webp"),
   progress: axisAsset("axishealth-8540.webp"),
-  vitals: axisAsset("axishealth-8545.webp"),
+  vitals: optimizedAxisAsset("axishealth-8545-960.webp"),
   systemType: axisAsset("axishealth-8589.webp"),
   systemColor: axisAsset("axishealth-8590.webp"),
   systemFields: axisAsset("axishealth-8592.webp"),
@@ -60,8 +61,8 @@ function ImageFrame({ className, children, label }: { className: string; childre
   return <figure className={`flare-visual ${className}`} aria-label={label}>{children}</figure>;
 }
 
-function SourceImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  return <img className={className} src={src} alt={alt} loading="lazy" decoding="async" />;
+function SourceImage({ src, alt, className, srcSet, sizes }: { src: string; alt: string; className?: string; srcSet?: string; sizes?: string }) {
+  return <img className={className} src={src} srcSet={srcSet} sizes={sizes} alt={alt} loading="lazy" decoding="async" />;
 }
 
 function BenefitCard({ title, intro, items, className = "" }: { title: string; intro: string; items: ReadonlyArray<readonly [string, string]>; className?: string }) {
@@ -109,10 +110,10 @@ export default function AxisHealthCaseStudy() {
         <ImageFrame className="axishealth-visual--pair" label="AxisHealth personalized health setup screens"><SourceImage className="axishealth-phone-left" src={images.onboardingLeft} alt="AxisHealth activity and goals setup" /><SourceImage className="axishealth-phone-right" src={images.onboardingRight} alt="AxisHealth nutrition target setup" /></ImageFrame>
 
         <TextSection title="Dashboard Experience"><p>The Dashboard serves as the central hub of AxisHealth, giving users a clear overview of their daily wellness goals from a single, easy-to-navigate screen. Instead of searching through multiple sections, users can instantly view calorie progress, exercise activity, scheduled tasks, meal plans, and recent health readings, helping them stay informed and focused throughout the day.</p><p>The interface was designed with a strong visual hierarchy that highlights the most important health metrics first while keeping secondary information easily accessible. Circular progress indicators, organized content cards, and actionable reminders enable users to quickly understand their daily status and take the next appropriate action without feeling overwhelmed.</p><p>By combining personalized insights, daily planning, and health tracking into one streamlined experience, the dashboard creates a motivating starting point for every session. The clean layout and intuitive navigation encourage users to build consistent wellness habits while making everyday health management feel simple, organized, and engaging.</p></TextSection>
-        <ImageFrame className="axishealth-visual--phone" label="AxisHealth dashboard experience"><SourceImage src={images.dashboard} alt="AxisHealth wellness dashboard" /></ImageFrame>
+        <ImageFrame className="axishealth-visual--phone" label="AxisHealth dashboard experience"><SourceImage src={images.dashboard} srcSet={`${optimizedAxisAsset("axishealth-8520-640.webp")} 640w, ${optimizedAxisAsset("axishealth-8520-960.webp")} 960w`} sizes="(min-width: 801px) 263px, 36vw" alt="AxisHealth wellness dashboard" /></ImageFrame>
 
         <TextSection title="Calorie &amp; Nutrition Tracking"><p>The Calorie &amp; Nutrition Tracking screen helps users stay on top of their daily nutritional goals through a simple and visually engaging interface. Instead of manually calculating progress, users can instantly view their remaining calorie allowance alongside a detailed breakdown of macronutrients, making it easier to understand how each meal contributes to their overall health objectives.</p><p>The experience was designed around clarity and actionable insights. A prominent circular progress indicator provides an immediate overview of daily calorie consumption, while dedicated protein, carbohydrate, and fat trackers help users maintain a balanced nutritional intake. Organized information cards and intuitive editing actions ensure users can quickly update their meals without interrupting their daily routine.</p><p>By transforming complex nutritional data into clear visual progress, the screen encourages healthier eating habits and consistent self-monitoring. The clean layout minimizes distractions while giving users the confidence to make informed dietary decisions that align with their personalized fitness and wellness goals.</p></TextSection>
-        <ImageFrame className="axishealth-visual--phone" label="AxisHealth calorie and nutrition tracking"><SourceImage src={images.nutrition} alt="AxisHealth calorie and nutrition screen" /></ImageFrame>
+        <ImageFrame className="axishealth-visual--phone" label="AxisHealth calorie and nutrition tracking"><SourceImage src={images.nutrition} srcSet={`${optimizedAxisAsset("axishealth-8525-640.webp")} 640w, ${optimizedAxisAsset("axishealth-8525-960.webp")} 960w`} sizes="(min-width: 801px) 263px, 36vw" alt="AxisHealth calorie and nutrition screen" /></ImageFrame>
 
         <TextSection title="Exercise &amp; Activity Tracking"><p>The Exercise &amp; Activity Tracking screen provides users with a comprehensive overview of their daily movement and fitness progress in one place. Designed to encourage consistency, the interface combines workout metrics, activity summaries, and personalized recommendations, allowing users to monitor their performance without navigating through multiple screens.</p><p>A set of visual progress indicators highlights key metrics such as daily activity, weekly performance, and step goals, giving users an instant understanding of how close they are to achieving their targets. Weekly workout statistics, including completed sessions, exercise duration, and calories burned, offer meaningful insights into overall fitness progress while reinforcing positive habits.</p><p>To create a more engaging workout experience, the screen also includes an integrated media player that enables users to listen to their preferred music or podcasts during exercise. A quick workout generator further simplifies planning by suggesting activities based on the user's available time, helping eliminate decision fatigue and making it easier to stay active every day.</p><p>The clean information hierarchy, intuitive navigation, and motivating visual feedback transform fitness tracking into a seamless daily experience, empowering users to maintain healthy routines and achieve their long-term wellness goals.</p></TextSection>
         <ImageFrame className="axishealth-visual--phone" label="AxisHealth exercise and activity tracking"><SourceImage src={images.exercise} alt="AxisHealth exercise and activity screen" /></ImageFrame>
@@ -124,7 +125,7 @@ export default function AxisHealthCaseStudy() {
         <ImageFrame className="axishealth-visual--phone" label="AxisHealth progress and side effects tracking"><SourceImage src={images.progress} alt="AxisHealth treatment progress screen" /></ImageFrame>
 
         <TextSection title="Vitals &amp; Health Monitoring"><p>The Vitals Tracking screen provides users with a centralized view of their long-term health progress by combining body metrics, visual progress tracking, and future goal planning in one intuitive interface. Rather than displaying isolated data points, the screen presents meaningful insights that help users understand how their health evolves over time.</p><p>Users can maintain a visual record of their transformation through progress photos, log important health metrics, and review long-term trends to measure improvements consistently. A future goal visualization feature further enhances motivation by helping users define objectives and visualize their desired outcomes, making progress feel more tangible and achievable.</p><p>Designed with clarity and accessibility in mind, the interface organizes health information into easy-to-understand sections while maintaining a clean visual hierarchy. By bringing together vitals, progress tracking, and goal management, the experience empowers users to stay engaged, monitor meaningful improvements, and make informed decisions throughout their health and wellness journey.</p></TextSection>
-        <ImageFrame className="axishealth-visual--phone" label="AxisHealth vitals and health monitoring"><SourceImage src={images.vitals} alt="AxisHealth vitals tracking screen" /></ImageFrame>
+        <ImageFrame className="axishealth-visual--phone" label="AxisHealth vitals and health monitoring"><SourceImage src={images.vitals} srcSet={`${optimizedAxisAsset("axishealth-8545-640.webp")} 640w, ${optimizedAxisAsset("axishealth-8545-960.webp")} 960w`} sizes="(min-width: 801px) 263px, 36vw" alt="AxisHealth vitals tracking screen" /></ImageFrame>
 
         <section className="flare-benefits-block"><TextSection title="Key Benefits"><p>AxisHealth is designed to simplify every aspect of personal health management through one connected platform. By combining fitness tracking, nutrition management, peptide scheduling, vital monitoring, and AI-powered wellness insights, the application helps users build healthier habits, monitor progress, and make informed decisions with confidence.</p></TextSection><BenefitCard title="Core Benefits" intro="Every feature is built to help users take control of their health journey through clear insights, personalized tracking, and an intuitive user experience." items={coreBenefits} /></section>
         <BenefitCard className="axishealth-user-benefits" title="User Benefits" intro="The experience is designed to make healthy living simple, measurable, and sustainable regardless of a user's fitness level or wellness objectives." items={userBenefits} />

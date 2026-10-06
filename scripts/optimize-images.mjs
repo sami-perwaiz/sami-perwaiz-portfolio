@@ -16,10 +16,10 @@ const responsive = [
   { source: "imgRectangle1410127957.png", output: "home/imgRectangle1410127957", widths: [64, 128, 192], mode: "photo" },
   { source: "imgSignUpScreen1.png", output: "home/imgSignUpScreen1", widths: [640, 1024, 1280], mode: "ui" },
   { source: "imgSignUpScreen2.png", output: "home/imgSignUpScreen2", widths: [640, 1024, 1280], mode: "ui" },
-  { source: "imgSignUpScreen3.png", output: "home/imgSignUpScreen3", widths: [768, 1024, 1440, 2560], mode: "ui" },
+  { source: "imgSignUpScreen3.png", output: "home/imgSignUpScreen3", widths: [768, 1024, 1440, 1920, 2304, 2560], mode: "ui" },
   { source: "imgSignUpScreen4.png", output: "home/imgSignUpScreen4", widths: [640, 1024, 1280], mode: "ui" },
   { source: "imgSignUpScreen5.png", output: "home/imgSignUpScreen5", widths: [640, 1024, 1280], mode: "ui" },
-  { source: "imgSignUpScreen6.png", output: "home/imgSignUpScreen6", widths: [768, 1024, 1440, 2560], mode: "ui" },
+  { source: "imgSignUpScreen6.png", output: "home/imgSignUpScreen6", widths: [768, 1024, 1440, 1920, 2304, 2560], mode: "ui" },
   { source: "imgDashboard3.png", output: "home/imgDashboard3", widths: [640, 1024, 1280], mode: "ui" },
   { source: "imgSignUpScreen7.png", output: "home/imgSignUpScreen7", widths: [640, 1024, 1280], mode: "ui" },
   { source: "imgImage69.png", output: "home/imgImage69", widths: [256, 512, 768], mode: "ui" },
@@ -40,6 +40,15 @@ const responsive = [
   { source: "imgRectangle1410127904.png", output: "gallery/imgRectangle1410127904", widths: [480, 900, 1200], mode: "gallery", avif: true },
   { source: "imgRectangle1410127906.png", output: "gallery/imgRectangle1410127906", widths: [640, 1024, 1200, 1800], mode: "gallery", avif: true },
   { source: "imgRectangle1410127910.png", output: "gallery/imgRectangle1410127910", widths: [480, 900, 1200], mode: "gallery", avif: true },
+  { source: "shipflex-case-study/shipflex-19031.webp", output: "case-studies/shipflex/shipflex-19031", widths: [720, 960, 1440], mode: "ui" },
+  { source: "shipflex-case-study/shipflex-19036.webp", output: "case-studies/shipflex/shipflex-19036", widths: [720, 960, 1440, 1920], mode: "ui" },
+  { source: "shipflex-case-study/shipflex-19096.webp", output: "case-studies/shipflex/shipflex-19096", widths: [720, 960, 1440, 1920], mode: "ui" },
+  { source: "unflappable-case-study/unflappable-19604.webp", output: "case-studies/unflappable/unflappable-19604", widths: [640, 960], mode: "ui" },
+  { source: "unflappable-case-study/unflappable-19605.webp", output: "case-studies/unflappable/unflappable-19605", widths: [640, 960], mode: "ui" },
+  { source: "unflappable-case-study/unflappable-19625.webp", output: "case-studies/unflappable/unflappable-19625", widths: [640, 960], mode: "ui" },
+  { source: "axishealth-case-study/axishealth-8520.webp", output: "case-studies/axishealth/axishealth-8520", widths: [640, 960], mode: "ui" },
+  { source: "axishealth-case-study/axishealth-8525.webp", output: "case-studies/axishealth/axishealth-8525", widths: [640, 960], mode: "ui" },
+  { source: "axishealth-case-study/axishealth-8545.webp", output: "case-studies/axishealth/axishealth-8545", widths: [640, 960], mode: "ui" },
 ];
 
 const singleWebp = [

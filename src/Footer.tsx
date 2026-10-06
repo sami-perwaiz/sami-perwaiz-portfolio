@@ -41,16 +41,16 @@ export default function Footer({
         <div className="footer-meta">
           <p className="footer-copy">{footerText}</p>
           <div className="footer-socials" aria-label="Social links">
-            <a href={externalSocialLinks.linkedin.href} target="_blank" rel="noreferrer" aria-label={externalSocialLinks.linkedin.label}>
+            <a href={externalSocialLinks.linkedin.href} target="_blank" rel="noopener noreferrer" aria-label={externalSocialLinks.linkedin.label}>
               <img src={a.footerLinkedin} alt="" width={24} height={24} loading="lazy" decoding="async" />
             </a>
-            <a href={externalSocialLinks.x.href} target="_blank" rel="noreferrer" aria-label={externalSocialLinks.x.label}>
+            <a href={externalSocialLinks.x.href} target="_blank" rel="noopener noreferrer" aria-label={externalSocialLinks.x.label}>
               <img className="footer-social-x" src={a.footerX} alt="" width={23} height={24} loading="lazy" decoding="async" />
             </a>
-            <a href={externalSocialLinks.dribbble.href} target="_blank" rel="noreferrer" aria-label={externalSocialLinks.dribbble.label}>
+            <a href={externalSocialLinks.dribbble.href} target="_blank" rel="noopener noreferrer" aria-label={externalSocialLinks.dribbble.label}>
               <img src={a.footerDribbble} alt="" width={24} height={24} loading="lazy" decoding="async" />
             </a>
-            <a href={externalSocialLinks.instagram.href} target="_blank" rel="noreferrer" aria-label={externalSocialLinks.instagram.label}>
+            <a href={externalSocialLinks.instagram.href} target="_blank" rel="noopener noreferrer" aria-label={externalSocialLinks.instagram.label}>
               <img src={a.footerInstagram} alt="" width={24} height={24} loading="lazy" decoding="async" />
             </a>
           </div>

@@ -1,12 +1,12 @@
 {
   "summary": {
-    "sourceFilesReplaced": 51,
-    "responsiveOutputs": 105,
-    "webpOutputs": 106,
+    "sourceFilesReplaced": 60,
+    "responsiveOutputs": 132,
+    "webpOutputs": 133,
     "avifOutputs": 23,
-    "originalBytes": 153140171,
-    "outputBytes": 21311586,
-    "generatedSavingsPercent": 86.08,
+    "originalBytes": 156637963,
+    "outputBytes": 28572560,
+    "generatedSavingsPercent": 81.76,
     "cleanedUnusedFiles": 23
   },
   "variants": [
@@ -132,6 +132,26 @@
     },
     {
       "source": "imgSignUpScreen3.png",
+      "output": "public/assets/optimized/home/imgSignUpScreen3-1920.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 1920,
+      "height": 1365,
+      "bytes": 896964
+    },
+    {
+      "source": "imgSignUpScreen3.png",
+      "output": "public/assets/optimized/home/imgSignUpScreen3-2304.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 2304,
+      "height": 1639,
+      "bytes": 1488426
+    },
+    {
+      "source": "imgSignUpScreen3.png",
       "output": "public/assets/optimized/home/imgSignUpScreen3-2560.webp",
       "format": "webp",
       "sourceWidth": 4096,
@@ -229,6 +249,26 @@
       "width": 1440,
       "height": 1024,
       "bytes": 368194
+    },
+    {
+      "source": "imgSignUpScreen6.png",
+      "output": "public/assets/optimized/home/imgSignUpScreen6-1920.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 1920,
+      "height": 1365,
+      "bytes": 639022
+    },
+    {
+      "source": "imgSignUpScreen6.png",
+      "output": "public/assets/optimized/home/imgSignUpScreen6-2304.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 2304,
+      "height": 1639,
+      "bytes": 896556
     },
     {
       "source": "imgSignUpScreen6.png",
@@ -1059,6 +1099,236 @@
       "width": 1200,
       "height": 1600,
       "bytes": 106442
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19031.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19031-720.webp",
+      "format": "webp",
+      "sourceWidth": 1440,
+      "sourceHeight": 1024,
+      "width": 720,
+      "height": 512,
+      "bytes": 148676
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19031.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19031-960.webp",
+      "format": "webp",
+      "sourceWidth": 1440,
+      "sourceHeight": 1024,
+      "width": 960,
+      "height": 683,
+      "bytes": 242010
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19031.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19031-1440.webp",
+      "format": "webp",
+      "sourceWidth": 1440,
+      "sourceHeight": 1024,
+      "width": 1440,
+      "height": 1024,
+      "bytes": 521880
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19036.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19036-720.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 720,
+      "height": 512,
+      "bytes": 65314
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19036.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19036-960.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 960,
+      "height": 683,
+      "bytes": 100558
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19036.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19036-1440.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 1440,
+      "height": 1024,
+      "bytes": 194082
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19036.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19036-1920.webp",
+      "format": "webp",
+      "sourceWidth": 4096,
+      "sourceHeight": 2913,
+      "width": 1920,
+      "height": 1365,
+      "bytes": 316102
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19096.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19096-720.webp",
+      "format": "webp",
+      "sourceWidth": 2880,
+      "sourceHeight": 2444,
+      "width": 720,
+      "height": 611,
+      "bytes": 53078
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19096.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19096-960.webp",
+      "format": "webp",
+      "sourceWidth": 2880,
+      "sourceHeight": 2444,
+      "width": 960,
+      "height": 815,
+      "bytes": 97194
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19096.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19096-1440.webp",
+      "format": "webp",
+      "sourceWidth": 2880,
+      "sourceHeight": 2444,
+      "width": 1440,
+      "height": 1222,
+      "bytes": 141622
+    },
+    {
+      "source": "shipflex-case-study/shipflex-19096.webp",
+      "output": "public/assets/optimized/case-studies/shipflex/shipflex-19096-1920.webp",
+      "format": "webp",
+      "sourceWidth": 2880,
+      "sourceHeight": 2444,
+      "width": 1920,
+      "height": 1629,
+      "bytes": 281622
+    },
+    {
+      "source": "unflappable-case-study/unflappable-19604.webp",
+      "output": "public/assets/optimized/case-studies/unflappable/unflappable-19604-640.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 640,
+      "height": 1391,
+      "bytes": 69498
+    },
+    {
+      "source": "unflappable-case-study/unflappable-19604.webp",
+      "output": "public/assets/optimized/case-studies/unflappable/unflappable-19604-960.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 960,
+      "height": 2086,
+      "bytes": 138530
+    },
+    {
+      "source": "unflappable-case-study/unflappable-19605.webp",
+      "output": "public/assets/optimized/case-studies/unflappable/unflappable-19605-640.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 640,
+      "height": 1391,
+      "bytes": 118452
+    },
+    {
+      "source": "unflappable-case-study/unflappable-19605.webp",
+      "output": "public/assets/optimized/case-studies/unflappable/unflappable-19605-960.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 960,
+      "height": 2086,
+      "bytes": 233150
+    },
+    {
+      "source": "unflappable-case-study/unflappable-19625.webp",
+      "output": "public/assets/optimized/case-studies/unflappable/unflappable-19625-640.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 640,
+      "height": 1391,
+      "bytes": 65600
+    },
+    {
+      "source": "unflappable-case-study/unflappable-19625.webp",
+      "output": "public/assets/optimized/case-studies/unflappable/unflappable-19625-960.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 960,
+      "height": 2086,
+      "bytes": 121328
+    },
+    {
+      "source": "axishealth-case-study/axishealth-8520.webp",
+      "output": "public/assets/optimized/case-studies/axishealth/axishealth-8520-640.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 640,
+      "height": 1391,
+      "bytes": 49262
+    },
+    {
+      "source": "axishealth-case-study/axishealth-8520.webp",
+      "output": "public/assets/optimized/case-studies/axishealth/axishealth-8520-960.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 960,
+      "height": 2086,
+      "bytes": 103368
+    },
+    {
+      "source": "axishealth-case-study/axishealth-8525.webp",
+      "output": "public/assets/optimized/case-studies/axishealth/axishealth-8525-640.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 640,
+      "height": 1391,
+      "bytes": 51326
+    },
+    {
+      "source": "axishealth-case-study/axishealth-8525.webp",
+      "output": "public/assets/optimized/case-studies/axishealth/axishealth-8525-960.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 960,
+      "height": 2086,
+      "bytes": 108336
+    },
+    {
+      "source": "axishealth-case-study/axishealth-8545.webp",
+      "output": "public/assets/optimized/case-studies/axishealth/axishealth-8545-640.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 640,
+      "height": 1391,
+      "bytes": 43554
+    },
+    {
+      "source": "axishealth-case-study/axishealth-8545.webp",
+      "output": "public/assets/optimized/case-studies/axishealth/axishealth-8545-960.webp",
+      "format": "webp",
+      "sourceWidth": 1760,
+      "sourceHeight": 3824,
+      "width": 960,
+      "height": 2086,
+      "bytes": 75464
     },
     {
       "source": "imgImage568.png",

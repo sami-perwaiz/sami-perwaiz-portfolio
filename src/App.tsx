@@ -9,6 +9,7 @@ import {
 } from "react";
 import Footer from "./Footer";
 import HomeCta from "./HomeCta";
+import ContactSection from "./ContactSection";
 import FaqSection from "./FaqSection";
 import ResponsiveImage from "./ResponsiveImage";
 import FlareCaseStudyPage from "./FlareCaseStudy";
@@ -16,7 +17,6 @@ import ShipFlexCaseStudyPage from "./ShipFlexCaseStudy";
 import UnflappableCaseStudyPage from "./UnflappableCaseStudy";
 import AxisHealthCaseStudyPage from "./AxisHealthCaseStudy";
 import { a } from "./assets";
-import { externalSocialLinks } from "./externalLinks";
 import { isHomeSectionId, scrollToHomeSection, type HomeSectionId } from "./homeSectionNavigation";
 import useNearViewportMedia from "./useNearViewportMedia";
 
@@ -411,7 +411,7 @@ function JobCard({
       className="job-card"
       href={href}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       aria-label={accessibleLabel}
       data-external-label={name}
     >
@@ -432,18 +432,18 @@ function JobCard({
 const navItems = [
   { icon: a.navHome, label: "Home", sectionId: "hero" },
   { icon: a.navUser, label: "About", sectionId: "about" },
-  { icon: a.navCode, label: "Services", sectionId: "services" },
-  { icon: a.navDesign, label: "Tools", sectionId: "toolkit" },
   { icon: a.navFolder, label: "Projects", sectionId: "projects" },
+  { icon: a.navDesign, label: "Tools", sectionId: "toolkit" },
+  { icon: a.navCode, label: "Services", sectionId: "services" },
   { icon: a.navChat, label: "Reviews", sectionId: "testimonials" },
 ] as const;
 
 const mobileNavItems = [
   { icon: a.mobileNavHome, label: "Home", sectionId: "hero" },
   { icon: a.mobileNavUser, label: "About Me", sectionId: "about" },
-  { icon: a.mobileNavServices, label: "Services", sectionId: "services" },
-  { icon: a.mobileNavTools, label: "Tools", sectionId: "toolkit" },
   { icon: a.mobileNavProjects, label: "Projects", sectionId: "projects" },
+  { icon: a.mobileNavTools, label: "Tools", sectionId: "toolkit" },
+  { icon: a.mobileNavServices, label: "Services", sectionId: "services" },
   { icon: a.mobileNavTestimonials, label: "Testimonials", sectionId: "testimonials" },
 ] as const;
 
@@ -604,19 +604,6 @@ function Nav({ homeAnchors = false, responsiveHome = false }: { homeAnchors?: bo
   );
 }
 
-function ExternalArrow() {
-  return (
-    <div className="ext-wrap" aria-hidden="true">
-      <div className="ext-track">
-        <img className="ext-arrow" src={a.external} alt="" />
-        <img className="ext-arrow ext-arrow--enter" src={a.external} alt="" />
-      </div>
-    </div>
-  );
-}
-
-const EMAIL = "samiperwaiz@gmail.com";
-
 const toolkitTools = [
   { name: "Figma", icon: a.image573 },
   { name: "Framer", icon: a.image574 },
@@ -690,19 +677,14 @@ const serviceCards: ServiceCardData[] = [
   },
 ];
 
-const SERVICE_CARD_HOLD_DURATION = 1800;
-const SERVICE_SWIPE_HOLD_DURATION = 4000;
-const SERVICE_SWIPE_THRESHOLD = 50;
-const SERVICE_DRAG_LIMIT = 140;
-const SERVICE_SEQUENCE_COUNT = 3;
-const SERVICE_STEP_PERCENT = 100 / (serviceCards.length * SERVICE_SEQUENCE_COUNT);
+const SERVICE_SCROLL_SPEED = 32;
+const SERVICE_TOUCH_AXIS_THRESHOLD = 8;
 
-type CarouselMotion = "idle" | "sliding" | "snapping";
-type CarouselTransitionSource = "autoplay" | "swipe" | "snapback" | null;
 type TouchAxis = "undetermined" | "horizontal" | "vertical";
 
 type TouchGesture = {
   axis: TouchAxis;
+  animationTime: number;
   deltaX: number;
   deltaY: number;
   ignore: boolean;
@@ -711,7 +693,15 @@ type TouchGesture = {
 };
 
 function createTouchGesture(): TouchGesture {
-  return { axis: "undetermined", deltaX: 0, deltaY: 0, ignore: false, startX: 0, startY: 0 };
+  return {
+    axis: "undetermined",
+    animationTime: 0,
+    deltaX: 0,
+    deltaY: 0,
+    ignore: false,
+    startX: 0,
+    startY: 0,
+  };
 }
 
 function ServiceCard({ card }: { card: ServiceCardData }) {
@@ -744,185 +734,84 @@ function ServiceCard({ card }: { card: ServiceCardData }) {
   );
 }
 
-function ServicesStepper({
-  activeIndex,
-  duration,
-  isPaused,
-}: {
-  activeIndex: number;
-  duration: number;
-  isPaused: boolean;
-}) {
-  const activeStep = ((activeIndex % serviceCards.length) + serviceCards.length) % serviceCards.length;
-
-  return (
-    <div className="service-stepper" aria-hidden="true">
-      {serviceCards.map((card, index) => {
-        const isActive = index === activeStep;
-
-        return (
-          <span
-            className={`service-step${isActive ? " is-active" : ""}${isActive && isPaused ? " is-paused" : ""}`}
-            key={card.title}
-            style={{ "--service-step-duration": `${duration}ms` } as CSSProperties}
-          >
-            <span className="service-step-progress" />
-          </span>
-        );
-      })}
-    </div>
-  );
-}
-
 function ServicesCarousel() {
-  const [activeIndex, setActiveIndex] = useState(serviceCards.length);
-  const [motion, setMotion] = useState<CarouselMotion>("idle");
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isTouching, setIsTouching] = useState(false);
-  const [autoplayDelay, setAutoplayDelay] = useState(SERVICE_CARD_HOLD_DURATION);
-  const activeIndexRef = useRef(serviceCards.length);
-  const motionRef = useRef<CarouselMotion>("idle");
-  const motionSourceRef = useRef<CarouselTransitionSource>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const sequenceRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<Animation | null>(null);
+  const animationDurationRef = useRef(0);
+  const animationPhaseRef = useRef(0);
   const isHoveredRef = useRef(false);
   const isTouchingRef = useRef(false);
-  const dragOffsetRef = useRef(0);
-  const holdTimerRef = useRef<number | null>(null);
-  const holdStartedAtRef = useRef<number | null>(null);
-  const remainingHoldTimeRef = useRef(SERVICE_CARD_HOLD_DURATION);
-  const queuedSwipeFrameRef = useRef<number | null>(null);
-  const pendingSwipeRef = useRef<-1 | 1 | null>(null);
+  const reducedMotionRef = useRef(false);
   const touchGestureRef = useRef<TouchGesture>(createTouchGesture());
 
-  const stopHoldTimer = (preserveRemainingTime: boolean) => {
-    if (holdTimerRef.current !== null) {
-      window.clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
+  const normalizeAnimationTime = (time: number) => {
+    const duration = animationDurationRef.current;
+    if (duration <= 0) return 0;
+    return ((time % duration) + duration) % duration;
+  };
+
+  const rebuildAnimation = useCallback(() => {
+    const row = rowRef.current;
+    const sequence = sequenceRef.current;
+    if (!row || !sequence) return;
+
+    const previousAnimation = animationRef.current;
+    const previousDuration = animationDurationRef.current;
+    if (previousAnimation && previousDuration > 0 && typeof previousAnimation.currentTime === "number") {
+      animationPhaseRef.current = normalizeAnimationTime(previousAnimation.currentTime) / previousDuration;
     }
 
-    if (preserveRemainingTime && holdStartedAtRef.current !== null) {
-      const elapsedTime = performance.now() - holdStartedAtRef.current;
-      remainingHoldTimeRef.current = Math.max(0, remainingHoldTimeRef.current - elapsedTime);
-    }
+    previousAnimation?.cancel();
+    animationRef.current = null;
+    animationDurationRef.current = 0;
+    row.style.removeProperty("transform");
 
-    holdStartedAtRef.current = null;
-  };
+    if (reducedMotionRef.current) return;
 
-  const resetHoldTimer = (duration: number) => {
-    stopHoldTimer(false);
-    remainingHoldTimeRef.current = duration;
-  };
+    const sequenceWidth = sequence.getBoundingClientRect().width;
+    if (sequenceWidth <= 0) return;
 
-  const setCarouselMotion = (nextMotion: CarouselMotion) => {
-    motionRef.current = nextMotion;
-    setMotion(nextMotion);
-  };
+    const duration = (sequenceWidth / SERVICE_SCROLL_SPEED) * 1000;
+    const animation = row.animate(
+      [
+        { transform: "translate3d(0, 0, 0)" },
+        { transform: `translate3d(${-sequenceWidth}px, 0, 0)` },
+      ],
+      {
+        duration,
+        easing: "linear",
+        iterations: Infinity,
+      },
+    );
 
-  const setCarouselIndex = (nextIndex: number) => {
-    activeIndexRef.current = nextIndex;
-    setActiveIndex(nextIndex);
-  };
+    animationDurationRef.current = duration;
+    animation.currentTime = animationPhaseRef.current * duration;
+    animationRef.current = animation;
 
-  const setCarouselDragOffset = (nextOffset: number) => {
-    dragOffsetRef.current = nextOffset;
-    setDragOffset(nextOffset);
-  };
-
-  const startSlide = (direction: -1 | 1, source: Exclude<CarouselTransitionSource, "snapback" | null>) => {
-    if (motionRef.current !== "idle") return;
-
-    const nextIndex = activeIndexRef.current + direction;
-    const firstPreviousCloneIndex = serviceCards.length - 1;
-    const firstNextCloneIndex = serviceCards.length * 2;
-
-    if (nextIndex < firstPreviousCloneIndex || nextIndex > firstNextCloneIndex) return;
-
-    resetHoldTimer(source === "swipe" ? SERVICE_SWIPE_HOLD_DURATION : SERVICE_CARD_HOLD_DURATION);
-    setCarouselDragOffset(0);
-    motionSourceRef.current = source;
-    setCarouselMotion("sliding");
-    setCarouselIndex(nextIndex);
-  };
-
-  const resetTouchInteraction = () => {
-    isTouchingRef.current = false;
-    setIsTouching(false);
-    touchGestureRef.current = createTouchGesture();
-  };
-
-  useEffect(() => {
-    if (motion !== "idle" || isHovered || isTouching || pendingSwipeRef.current !== null) return;
-
-    stopHoldTimer(false);
-    holdStartedAtRef.current = performance.now();
-    holdTimerRef.current = window.setTimeout(() => {
-      holdTimerRef.current = null;
-      holdStartedAtRef.current = null;
-      remainingHoldTimeRef.current = 0;
-      if (
-        isHoveredRef.current ||
-        isTouchingRef.current ||
-        motionRef.current !== "idle" ||
-        pendingSwipeRef.current !== null
-      ) {
-        return;
-      }
-
-      startSlide(1, "autoplay");
-    }, remainingHoldTimeRef.current);
-
-    return () => stopHoldTimer(true);
-  }, [activeIndex, autoplayDelay, isHovered, isTouching, motion]);
-
-  useEffect(() => {
-    return () => {
-      stopHoldTimer(false);
-      if (queuedSwipeFrameRef.current !== null) {
-        window.cancelAnimationFrame(queuedSwipeFrameRef.current);
-      }
-    };
+    if (isHoveredRef.current || isTouchingRef.current) animation.pause();
   }, []);
 
-  const handleTransitionEnd = (event: React.TransitionEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget || event.propertyName !== "transform" || motionRef.current === "idle") return;
+  useLayoutEffect(() => {
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleReducedMotionChange = () => {
+      reducedMotionRef.current = reducedMotionQuery.matches;
+      rebuildAnimation();
+    };
+    const resizeObserver = new ResizeObserver(rebuildAnimation);
 
-    const completedMotion = motionRef.current;
-    const completedSource = motionSourceRef.current;
+    reducedMotionRef.current = reducedMotionQuery.matches;
+    rebuildAnimation();
+    if (sequenceRef.current) resizeObserver.observe(sequenceRef.current);
+    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
 
-    if (completedMotion === "snapping") {
-      motionSourceRef.current = null;
-      resetHoldTimer(SERVICE_SWIPE_HOLD_DURATION);
-      setCarouselMotion("idle");
-      setAutoplayDelay(SERVICE_SWIPE_HOLD_DURATION);
-      return;
-    }
-
-    let settledIndex = activeIndexRef.current;
-    if (settledIndex === serviceCards.length * 2) {
-      settledIndex = serviceCards.length;
-    } else if (settledIndex === serviceCards.length - 1) {
-      settledIndex = serviceCards.length * 2 - 1;
-    }
-
-    motionSourceRef.current = null;
-    setCarouselMotion("idle");
-    setCarouselDragOffset(0);
-    setCarouselIndex(settledIndex);
-
-    if (pendingSwipeRef.current !== null) {
-      const direction = pendingSwipeRef.current;
-      queuedSwipeFrameRef.current = window.requestAnimationFrame(() => {
-        queuedSwipeFrameRef.current = null;
-        pendingSwipeRef.current = null;
-        startSlide(direction, "swipe");
-      });
-      return;
-    }
-
-    const nextDelay = completedSource === "swipe" ? SERVICE_SWIPE_HOLD_DURATION : SERVICE_CARD_HOLD_DURATION;
-    remainingHoldTimeRef.current = nextDelay;
-    setAutoplayDelay(nextDelay);
-  };
+    return () => {
+      resizeObserver.disconnect();
+      reducedMotionQuery.removeEventListener("change", handleReducedMotionChange);
+      animationRef.current?.cancel();
+      animationRef.current = null;
+    };
+  }, [rebuildAnimation]);
 
   const handlePointerEnter = (event: React.PointerEvent<HTMLDivElement>) => {
     if (
@@ -931,30 +820,30 @@ function ServicesCarousel() {
     ) return;
 
     isHoveredRef.current = true;
-    if (motionRef.current === "idle") stopHoldTimer(true);
-    setIsHovered(true);
+    animationRef.current?.pause();
   };
 
   const handlePointerLeave = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType !== "mouse") return;
+    if (
+      event.pointerType !== "mouse" ||
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    ) return;
 
     isHoveredRef.current = false;
-    setIsHovered(false);
+    if (!isTouchingRef.current && !reducedMotionRef.current) animationRef.current?.play();
   };
 
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (event.touches.length !== 1) {
+    if (reducedMotionRef.current || event.touches.length !== 1) {
       touchGestureRef.current = { ...createTouchGesture(), ignore: true };
       return;
     }
 
     const touch = event.touches[0];
-    const canDeferFromAutoplay = motionRef.current === "sliding" && motionSourceRef.current === "autoplay";
-    const canTrackGesture = motionRef.current === "idle" || canDeferFromAutoplay;
-
     touchGestureRef.current = {
       ...createTouchGesture(),
-      ignore: !canTrackGesture,
+      animationTime:
+        typeof animationRef.current?.currentTime === "number" ? animationRef.current.currentTime : 0,
       startX: touch.clientX,
       startY: touch.clientY,
     };
@@ -969,22 +858,26 @@ function ServicesCarousel() {
     gesture.deltaY = touch.clientY - gesture.startY;
 
     if (gesture.axis === "undetermined") {
-      if (Math.abs(gesture.deltaX) < 8 && Math.abs(gesture.deltaY) < 8) return;
+      if (
+        Math.abs(gesture.deltaX) < SERVICE_TOUCH_AXIS_THRESHOLD &&
+        Math.abs(gesture.deltaY) < SERVICE_TOUCH_AXIS_THRESHOLD
+      ) return;
       gesture.axis = Math.abs(gesture.deltaX) > Math.abs(gesture.deltaY) ? "horizontal" : "vertical";
     }
 
     if (gesture.axis !== "horizontal") return;
 
-    if (motionRef.current !== "idle") return;
-
     if (!isTouchingRef.current) {
       isTouchingRef.current = true;
-      setIsTouching(true);
-      stopHoldTimer(true);
+      animationRef.current?.pause();
+      gesture.animationTime =
+        typeof animationRef.current?.currentTime === "number" ? animationRef.current.currentTime : 0;
     }
 
-    const nextOffset = Math.max(-SERVICE_DRAG_LIMIT, Math.min(SERVICE_DRAG_LIMIT, gesture.deltaX));
-    setCarouselDragOffset(nextOffset);
+    if (animationRef.current) {
+      const dragTime = (gesture.deltaX / SERVICE_SCROLL_SPEED) * 1000;
+      animationRef.current.currentTime = normalizeAnimationTime(gesture.animationTime - dragTime);
+    }
   };
 
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
@@ -1000,51 +893,18 @@ function ServicesCarousel() {
       gesture.deltaY = touch.clientY - gesture.startY;
     }
 
-    const isHorizontalSwipe =
-      gesture.axis === "horizontal" &&
-      Math.abs(gesture.deltaX) >= SERVICE_SWIPE_THRESHOLD &&
-      Math.abs(gesture.deltaX) > Math.abs(gesture.deltaY);
-    const direction: -1 | 1 = gesture.deltaX < 0 ? 1 : -1;
-
-    resetTouchInteraction();
-
-    if (motionRef.current === "sliding" && motionSourceRef.current === "autoplay") {
-      if (isHorizontalSwipe) pendingSwipeRef.current = direction;
-      return;
+    if (isTouchingRef.current) {
+      isTouchingRef.current = false;
+      if (!isHoveredRef.current && !reducedMotionRef.current) animationRef.current?.play();
     }
-
-    if (motionRef.current !== "idle") return;
-
-    if (isHorizontalSwipe) {
-      startSlide(direction, "swipe");
-      return;
-    }
-
-    if (dragOffsetRef.current !== 0) {
-      motionSourceRef.current = "snapback";
-      setCarouselMotion("snapping");
-      setCarouselDragOffset(0);
-    }
+    touchGestureRef.current = createTouchGesture();
   };
 
   const handleTouchCancel = () => {
-    const gesture = touchGestureRef.current;
-    if (gesture.ignore) {
-      touchGestureRef.current = createTouchGesture();
-      return;
-    }
-
-    resetTouchInteraction();
-    if (motionRef.current !== "idle" || dragOffsetRef.current === 0) return;
-
-    motionSourceRef.current = "snapback";
-    setCarouselMotion("snapping");
-    setCarouselDragOffset(0);
+    isTouchingRef.current = false;
+    touchGestureRef.current = createTouchGesture();
+    if (!isHoveredRef.current && !reducedMotionRef.current) animationRef.current?.play();
   };
-
-  const rowClassName =
-    motion === "sliding" ? "service-row is-transitioning" : motion === "snapping" ? "service-row is-snapping" : "service-row";
-  const isStepperPaused = motion !== "idle" || isHovered || isTouching;
 
   return (
     <div className="services-carousel">
@@ -1057,17 +917,8 @@ function ServicesCarousel() {
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
       >
-        <div
-          className={rowClassName}
-          style={{ transform: `translate3d(-${activeIndex * SERVICE_STEP_PERCENT}%, 0, 0) translate3d(${dragOffset}px, 0, 0)` }}
-          onTransitionEnd={handleTransitionEnd}
-        >
-          <div className="service-sequence" aria-hidden="true">
-            {serviceCards.map((card) => (
-              <ServiceCard card={card} key={`previous-${card.title}`} />
-            ))}
-          </div>
-          <div className="service-sequence">
+        <div className="service-row" ref={rowRef}>
+          <div className="service-sequence" ref={sequenceRef}>
             {serviceCards.map((card) => (
               <ServiceCard card={card} key={card.title} />
             ))}
@@ -1079,37 +930,7 @@ function ServicesCarousel() {
           </div>
         </div>
       </div>
-      <ServicesStepper activeIndex={activeIndex} duration={autoplayDelay} isPaused={isStepperPaused} />
     </div>
-  );
-}
-
-function CopyButton() {
-  const [copied, setCopied] = useState(false);
-  const resetTimeout = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (resetTimeout.current) window.clearTimeout(resetTimeout.current);
-    };
-  }, []);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(EMAIL);
-      setCopied(true);
-      if (resetTimeout.current) window.clearTimeout(resetTimeout.current);
-      resetTimeout.current = window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard unavailable
-    }
-  };
-
-  return (
-    <button type="button" className="copy-wrap" onClick={handleCopy} aria-label="Copy email">
-      <img className={`copy-icon${copied ? "" : " is-visible"}`} src={a.copy} alt="" loading="lazy" decoding="async" />
-      <img className={`copy-icon copy-icon--check${copied ? " is-visible" : ""}`} src={a.check} alt="" loading="lazy" decoding="async" />
-    </button>
   );
 }
 
@@ -1173,7 +994,7 @@ function HomePage() {
             className="card-lg"
             style={{ backgroundImage: "linear-gradient(128.11deg, rgb(21, 25, 10) 0%, rgb(13, 14, 6) 100%)" }}
           >
-            <ResponsiveImage className="inner-lg" base="/assets/optimized/home/imgSignUpScreen3" widths={[768, 1024, 1440, 2560]} sizes="(min-width: 1200px) 1278px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
+              <ResponsiveImage className="inner-lg" base="/assets/optimized/home/imgSignUpScreen3" widths={[768, 1024, 1440, 1920, 2304, 2560]} sizes="(min-width: 1200px) 1278px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
           </div>
           <div className="row-2">
             <div
@@ -1193,7 +1014,7 @@ function HomePage() {
             className="card-lg"
             style={{ backgroundImage: "linear-gradient(128.11deg, rgb(249, 249, 249) 0%, rgb(238, 238, 238) 100%)" }}
           >
-            <ResponsiveImage className="inner-lg6" base="/assets/optimized/home/imgSignUpScreen6" widths={[768, 1024, 1440, 2560]} sizes="(min-width: 1200px) 1272px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
+            <ResponsiveImage className="inner-lg6" base="/assets/optimized/home/imgSignUpScreen6" widths={[768, 1024, 1440, 1920, 2304, 2560]} sizes="(min-width: 1200px) 1272px, calc(100vw - 80px)" sourceWidth={4096} sourceHeight={2913} alt="" />
           </div>
           <div className="row-2">
             <div
@@ -1363,10 +1184,10 @@ function HomePage() {
 
       <section className="section gallery">
         <div className="section-head gallery-head">
-          <h2 className="sf sf-med">AI Visual Gallery</h2>
+          <h2 className="sf sf-med">AI-Powered Creations</h2>
           <p className="sf sf-reg">
-            A collection of creative explorations that reflects my curiosity, experimentation, and passion for
-            discovering what's possible with modern AI.
+            A collection of AI-powered visuals exploring creative ideas, unique concepts, and new possibilities in
+            digital design.
           </p>
         </div>
         <div className="gallery-grid">
@@ -1489,10 +1310,10 @@ function HomePage() {
           <div className="t-row">
             <article className="t-card">
               <p className="t-quote sf sf-reg">
-                After looking at different furniture choices, I found the CozyNest sofa to be exceptional. Its modern
-                design and cozy feel really stand out. I love how it fits perfectly in my living room. If you're in the
-                market for a new sofa, this one is worth a look! It combines style and comfort seamlessly. Trust me, you
-                won't be disappointed!
+                Sami was a valuable part of our product design work. He has a good understanding of user experience and
+                knows how to turn complex requirements into simple, clean designs. He's thoughtful with his decisions,
+                pays attention to details, and works well with the team. His contribution to the design process was
+                genuinely appreciated.
               </p>
               <div className="t-foot">
                 <div className="t-person">
@@ -1510,10 +1331,9 @@ function HomePage() {
             </article>
             <article className="t-card">
               <p className="t-quote sf sf-reg">
-                After looking at different furniture choices, I found the CozyNest sofa to be exceptional. Its modern
-                design and cozy feel really stand out. I love how it fits perfectly in my living room. If you're in the
-                market for a new sofa, this one is worth a look! It combines style and comfort seamlessly. Trust me, you
-                won't be disappointed!
+                I had a really good experience working with Sami on my project. He understood what I was looking for and
+                came up with ideas that made the design even better. Communication was easy, and he was always open to
+                feedback. I appreciated his attention to detail and how smoothly everything went from start to finish.
               </p>
               <div className="t-foot">
                 <div className="t-person">
@@ -1530,10 +1350,10 @@ function HomePage() {
           <div className="t-row">
             <article className="t-card">
               <p className="t-quote sf sf-reg">
-                After looking at different furniture choices, I found the CozyNest sofa to be exceptional. Its modern
-                design and cozy feel really stand out. I love how it fits perfectly in my living room. If you're in the
-                market for a new sofa, this one is worth a look! It combines style and comfort seamlessly. Trust me, you
-                won't be disappointed!
+                I've worked closely with Sami at Alpha Hive AI, and what stands out is his approach to solving design
+                problems. He doesn't just focus on visuals; he thinks about usability and the overall product experience.
+                He's reliable, takes ownership of his work, and is always willing to improve. He's been a great person to
+                have on the design team.
               </p>
               <div className="t-foot">
                 <div className="t-person">
@@ -1548,10 +1368,10 @@ function HomePage() {
             </article>
             <article className="t-card">
               <p className="t-quote sf sf-reg">
-                After looking at different furniture choices, I found the CozyNest sofa to be exceptional. Its modern
-                design and cozy feel really stand out. I love how it fits perfectly in my living room. If you're in the
-                market for a new sofa, this one is worth a look! It combines style and comfort seamlessly. Trust me, you
-                won't be disappointed!
+                I worked with Sami on a project, and collaborating with him was a great experience. His designs were
+                clear, well-structured, and easy to work with during development. He was always available to discuss ideas
+                or resolve questions, which made the whole process easier. I really appreciated his communication and
+                attention to the little details.
               </p>
               <div className="t-foot">
                 <div className="t-person">
@@ -1568,92 +1388,10 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="social" id="contact">
-        <div className="social-inner">
-          <p className="social-title sf sf-reg">Your Next Step Starts Here</p>
-          <div className="social-grid">
-            <div className="social-pair">
-              <a
-                className="social-item"
-                href={externalSocialLinks.linkedin.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={externalSocialLinks.linkedin.label}
-              >
-                <div className="social-item-inner">
-                  <img className="logo" src={a.linkedin} alt="" loading="lazy" decoding="async" />
-                  <span className="sf sf-med">LinkedIn.com</span>
-                  <ExternalArrow />
-                </div>
-              </a>
-              <a
-                className="social-item"
-                href={externalSocialLinks.x.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={externalSocialLinks.x.label}
-              >
-                <div className="social-item-inner">
-                  <img className="logo round" src={a.iconX} alt="" loading="lazy" decoding="async" />
-                  <span className="sf sf-med">X.com</span>
-                  <ExternalArrow />
-                </div>
-              </a>
-            </div>
-            <div className="social-pair">
-              <a
-                className="social-item"
-                href={externalSocialLinks.dribbble.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={externalSocialLinks.dribbble.label}
-              >
-                <div className="social-item-inner">
-                  <img className="logo round" src={a.iconDribbble} alt="" loading="lazy" decoding="async" />
-                  <span className="sf sf-med">Dribbble.com</span>
-                  <ExternalArrow />
-                </div>
-              </a>
-              <a
-                className="social-item"
-                href={externalSocialLinks.instagram.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={externalSocialLinks.instagram.label}
-              >
-                <div className="social-item-inner">
-                  <img className="logo" src={a.instagram} alt="" loading="lazy" decoding="async" />
-                  <span className="sf sf-med">Instagram.com</span>
-                  <ExternalArrow />
-                </div>
-              </a>
-            </div>
-            <a
-              className="social-item full"
-              href={externalSocialLinks.upwork.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={externalSocialLinks.upwork.label}
-            >
-              <div className="social-item-inner">
-                <img className="logo round" src={a.iconUpwork} alt="" loading="lazy" decoding="async" />
-                <span className="sf sf-med">Upwork.com</span>
-                <ExternalArrow />
-              </div>
-            </a>
-            <div className="social-item full">
-              <div className="social-item-inner">
-                <img className="logo round" src={a.iconEmail} alt="" loading="lazy" decoding="async" />
-                <span className="sf sf-reg">{EMAIL}</span>
-                <CopyButton />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ContactSection />
 
       <div className="home-page-tail">
-        <HomeCta />
+        <HomeCta onAction={() => scrollToHomeSection("contact")} />
         <Footer sectionNavigation />
       </div>
       </div>

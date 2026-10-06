@@ -5,11 +5,12 @@ import CaseStudyHomeTail from "./CaseStudyHomeTail";
 
 const flareAsset = (name: string) => `/assets/flare-case-study/${name}`;
 const shipFlexAsset = (name: string) => `/assets/shipflex-case-study/${name}`;
+const optimizedShipFlexAsset = (name: string) => `/assets/optimized/case-studies/shipflex/${name}`;
 
 const images = {
-  login: shipFlexAsset("shipflex-19031.webp"),
-  dashboard: shipFlexAsset("shipflex-19036.webp"),
-  shipments: shipFlexAsset("shipflex-19096.webp"),
+  login: optimizedShipFlexAsset("shipflex-19031-1440.webp"),
+  dashboard: optimizedShipFlexAsset("shipflex-19036-1920.webp"),
+  shipments: optimizedShipFlexAsset("shipflex-19096-1920.webp"),
   navigation: shipFlexAsset("shipflex-19101.webp"),
   navigationDetail: shipFlexAsset("shipflex-19102.webp"),
   fields: shipFlexAsset("shipflex-19104.webp"),
@@ -57,8 +58,8 @@ function ImageFrame({ className, children, label }: { className: string; childre
   return <figure className={`flare-visual ${className}`} aria-label={label}>{children}</figure>;
 }
 
-function SourceImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  return <img className={className} src={src} alt={alt} loading="lazy" decoding="async" />;
+function SourceImage({ src, alt, className, srcSet, sizes }: { src: string; alt: string; className?: string; srcSet?: string; sizes?: string }) {
+  return <img className={className} src={src} srcSet={srcSet} sizes={sizes} alt={alt} loading="lazy" decoding="async" />;
 }
 
 function BenefitCard({ title, intro, items }: { title: string; intro: string; items: ReadonlyArray<readonly [string, string]> }) {
@@ -106,17 +107,17 @@ export default function ShipFlexCaseStudy() {
         <section className="flare-philosophy shipflex-approach"><TextSection title="Design Approach"><p>The project was driven by the goal of creating an intuitive product that simplifies complex shipping workflows without overwhelming users. Every module was designed with consistency, scalability, and usability in mind, ensuring merchants could complete common tasks with minimal effort while maintaining a seamless experience throughout the platform.</p></TextSection><div className="flare-principles">{approach.map(([title, copy]) => <article key={title}><h3>{title}</h3><p>{copy}</p></article>)}</div></section>
 
         <TextSection title="Login Experience"><p>The login experience was designed to create a smooth and welcoming entry into the ShipFlex platform. Keeping the interface clean and distraction-free allows users to sign in quickly and get straight to managing their shipping operations without unnecessary friction.</p><p>The visual illustration reinforces the platform's logistics identity, while a clear form layout, familiar authentication options, and consistent branding build trust from the very first interaction. Every element was designed to make onboarding feel effortless and establish a consistent user experience across the product.</p></TextSection>
-        <ImageFrame className="shipflex-visual--login" label="ShipFlex login experience"><SourceImage src={images.login} alt="ShipFlex login screen" /></ImageFrame>
+        <ImageFrame className="shipflex-visual--login" label="ShipFlex login experience"><SourceImage src={images.login} srcSet={`${optimizedShipFlexAsset("shipflex-19031-720.webp")} 720w, ${optimizedShipFlexAsset("shipflex-19031-960.webp")} 960w, ${optimizedShipFlexAsset("shipflex-19031-1440.webp")} 1440w`} sizes="(min-width: 801px) 669px, 91vw" alt="ShipFlex login screen" /></ImageFrame>
 
         <TextSection title="Main Dashboard Showcase"><p>The Analytics Dashboard serves as the operational hub of ShipFlex, giving merchants a real-time overview of their shipping performance from a single screen. Instead of switching between multiple carrier portals and reports, users can instantly monitor shipments, compare shipping costs, track carrier utilization, and identify key business trends.</p><p>The dashboard was designed with a clear visual hierarchy, allowing the most important metrics to stand out while supporting deeper insights through charts and data visualizations. This approach helps users make faster decisions, monitor fulfillment performance, and stay in control of daily shipping operations with confidence.</p></TextSection>
-        <ImageFrame className="shipflex-visual--dashboard" label="ShipFlex analytics dashboard"><SourceImage src={images.dashboard} alt="ShipFlex analytics dashboard" /></ImageFrame>
+        <ImageFrame className="shipflex-visual--dashboard" label="ShipFlex analytics dashboard"><SourceImage src={images.dashboard} srcSet={`${optimizedShipFlexAsset("shipflex-19036-720.webp")} 720w, ${optimizedShipFlexAsset("shipflex-19036-960.webp")} 960w, ${optimizedShipFlexAsset("shipflex-19036-1440.webp")} 1440w, ${optimizedShipFlexAsset("shipflex-19036-1920.webp")} 1920w`} sizes="(min-width: 801px) 663px, 90vw" alt="ShipFlex analytics dashboard" /></ImageFrame>
 
         <section className="flare-benefits-block"><TextSection title="Key Benefits"><p>ShipFlex was designed to simplify shipping operations by bringing every essential workflow into one intuitive platform. The product helps merchants save time, improve visibility, and manage fulfillment with greater confidence through a streamlined and user-centered experience.</p></TextSection><BenefitCard title="Business Benefits" intro="The platform helps businesses optimize their shipping operations while reducing manual work and improving overall efficiency." items={businessBenefits} /></section>
 
         <BenefitCard title="User Benefits" intro="The experience was designed to make daily shipping tasks simpler, faster, and easier to manage for merchants and operations teams." items={userBenefits} />
 
         <TextSection title="Shipment Management"><p>The Shipment Management module provides a centralized workspace where merchants can monitor and manage every shipment throughout its lifecycle. Instead of switching between multiple carrier portals, users can view shipment details, track delivery progress, and manage orders from a single, organized interface.</p><p>Designed for efficiency, the table presents key information such as order details, receiver information, selected carrier, tracking numbers, delivery status, and available actions in a clear, easy-to-scan layout. Built-in filters, pagination, and status indicators help users quickly locate shipments, monitor fulfillment progress, and respond to exceptions with minimal effort.</p></TextSection>
-        <ImageFrame className="shipflex-visual--shipments" label="ShipFlex shipment management"><SourceImage src={images.shipments} alt="ShipFlex shipment management table" /></ImageFrame>
+        <ImageFrame className="shipflex-visual--shipments" label="ShipFlex shipment management"><SourceImage src={images.shipments} srcSet={`${optimizedShipFlexAsset("shipflex-19096-720.webp")} 720w, ${optimizedShipFlexAsset("shipflex-19096-960.webp")} 960w, ${optimizedShipFlexAsset("shipflex-19096-1440.webp")} 1440w, ${optimizedShipFlexAsset("shipflex-19096-1920.webp")} 1920w`} sizes="(min-width: 801px) 661px, 90vw" alt="ShipFlex shipment management table" /></ImageFrame>
 
         <TextSection title="Consistent Product Experience"><p>Creating a seamless user experience goes beyond individual screens. Every element across ShipFlex was designed to follow a consistent visual language, helping users recognize patterns and interact with the platform naturally. From typography and color usage to forms, buttons, navigation, and interactive controls, each element was carefully refined to deliver a familiar and intuitive experience.</p><p>This consistent approach not only improves usability but also makes the platform easier to learn, reduces cognitive load, and ensures new features can be introduced without disrupting the overall user experience.</p></TextSection>
 

@@ -6,6 +6,12 @@ export function isHomeSectionId(value: string | undefined): value is HomeSection
   return homeSectionIds.some((sectionId) => sectionId === value);
 }
 
+export function scrollToPageSection(sectionId: string) {
+  const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+  document.getElementById(sectionId)?.scrollIntoView({ behavior, block: "start" });
+}
+
 export function scrollToHomeSection(sectionId: HomeSectionId) {
   const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
@@ -14,5 +20,5 @@ export function scrollToHomeSection(sectionId: HomeSectionId) {
     return;
   }
 
-  document.getElementById(sectionId)?.scrollIntoView({ behavior, block: "start" });
+  scrollToPageSection(sectionId);
 }

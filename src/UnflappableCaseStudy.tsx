@@ -5,6 +5,7 @@ import CaseStudyHomeTail from "./CaseStudyHomeTail";
 
 const flareAsset = (name: string) => `/assets/flare-case-study/${name}`;
 const unflappableAsset = (name: string) => `/assets/unflappable-case-study/${name}`;
+const optimizedUnflappableAsset = (name: string) => `/assets/optimized/case-studies/unflappable/${name}`;
 
 const images = {
   welcome: unflappableAsset("unflappable-19590.webp"),
@@ -12,8 +13,8 @@ const images = {
   onboardingChallenge: unflappableAsset("unflappable-19596.webp"),
   onboardingGoal: unflappableAsset("unflappable-19598.webp"),
   onboardingReminder: unflappableAsset("unflappable-19599.webp"),
-  dashboardMission: unflappableAsset("unflappable-19604.webp"),
-  dashboardCompleted: unflappableAsset("unflappable-19605.webp"),
+  dashboardMission: optimizedUnflappableAsset("unflappable-19604-960.webp"),
+  dashboardCompleted: optimizedUnflappableAsset("unflappable-19605-960.webp"),
   weeklyReview: unflappableAsset("unflappable-19607.webp"),
   missionHistory: unflappableAsset("unflappable-19608.webp"),
   resetIntro: unflappableAsset("unflappable-19613.webp"),
@@ -21,7 +22,7 @@ const images = {
   resetFeeling: unflappableAsset("unflappable-19616.webp"),
   resetResult: unflappableAsset("unflappable-19618.webp"),
   resetHistory: unflappableAsset("unflappable-19620.webp"),
-  progress: unflappableAsset("unflappable-19625.webp"),
+  progress: optimizedUnflappableAsset("unflappable-19625-960.webp"),
   systemNavigation: unflappableAsset("unflappable-19685.webp"),
   systemDetail: unflappableAsset("unflappable-19686.webp"),
   systemFields: unflappableAsset("unflappable-19688.webp"),
@@ -70,8 +71,8 @@ function ImageFrame({ className, children, label }: { className: string; childre
   return <figure className={`flare-visual ${className}`} aria-label={label}>{children}</figure>;
 }
 
-function SourceImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  return <img className={className} src={src} alt={alt} loading="lazy" decoding="async" />;
+function SourceImage({ src, alt, className, srcSet, sizes }: { src: string; alt: string; className?: string; srcSet?: string; sizes?: string }) {
+  return <img className={className} src={src} srcSet={srcSet} sizes={sizes} alt={alt} loading="lazy" decoding="async" />;
 }
 
 function BenefitCard({ title, intro, items }: { title: string; intro: string; items: ReadonlyArray<readonly [string, string]> }) {
@@ -122,7 +123,7 @@ export default function UnflappableCaseStudy() {
         <ImageFrame className="unflappable-visual--phone-pair" label="Unflappable onboarding goals and reminders"><SourceImage className="unflappable-phone-left" src={images.onboardingGoal} alt="Select what to improve onboarding screen" /><SourceImage className="unflappable-phone-right" src={images.onboardingReminder} alt="Daily reminder onboarding screen" /></ImageFrame>
 
         <TextSection title="Home Dashboard &amp; Daily Mission"><p>The Home Dashboard was designed to become the user's daily command center, helping them stay focused on what matters most without unnecessary distractions. Instead of presenting multiple competing priorities, the experience encourages users to define one clear daily mission, track their progress, and build momentum through small, consistent actions.</p><p>The dashboard combines personalized greetings, progress indicators, streak tracking, and weekly review reminders into a clean, easy-to-navigate interface. As users complete each action, the mission updates in real time, providing immediate feedback and a clear sense of accomplishment.</p><p>This focused workflow helps users maintain clarity, follow through on their goals, and develop lasting daily habits while keeping the overall experience calm, intuitive, and motivating.</p></TextSection>
-        <ImageFrame className="unflappable-visual--phone-pair" label="Unflappable daily mission screens"><SourceImage className="unflappable-phone-left" src={images.dashboardMission} alt="Daily mission dashboard" /><SourceImage className="unflappable-phone-right" src={images.dashboardCompleted} alt="Completed daily mission dashboard" /></ImageFrame>
+        <ImageFrame className="unflappable-visual--phone-pair" label="Unflappable daily mission screens"><SourceImage className="unflappable-phone-left" src={images.dashboardMission} srcSet={`${optimizedUnflappableAsset("unflappable-19604-640.webp")} 640w, ${optimizedUnflappableAsset("unflappable-19604-960.webp")} 960w`} sizes="(min-width: 801px) 307px, 42vw" alt="Daily mission dashboard" /><SourceImage className="unflappable-phone-right" src={images.dashboardCompleted} srcSet={`${optimizedUnflappableAsset("unflappable-19605-640.webp")} 640w, ${optimizedUnflappableAsset("unflappable-19605-960.webp")} 960w`} sizes="(min-width: 801px) 307px, 42vw" alt="Completed daily mission dashboard" /></ImageFrame>
         <ImageFrame className="unflappable-visual--phone-pair" label="Unflappable weekly review and mission history"><SourceImage className="unflappable-phone-left" src={images.weeklyReview} alt="Weekly review screen" /><SourceImage className="unflappable-phone-right" src={images.missionHistory} alt="Mission history screen" /></ImageFrame>
 
         <TextSection title="Reset Flow"><p>The Reset Flow is the signature experience of Unflappable, designed to help users pause, regain clarity, and move forward when they feel overwhelmed or stuck. Instead of allowing stress to interrupt productivity, the flow guides users through a simple step-by-step process that transforms emotional reactions into practical next actions.</p><p>Users begin by identifying what triggered their current situation, followed by selecting how they're feeling. Based on these inputs, the app provides a thoughtful reframe and a single recommended next step to help users refocus. Completed resets are saved to a history screen, allowing users to reflect on recurring patterns and measure their personal growth over time. This calm, structured approach encourages resilience while keeping the experience fast, focused, and easy to use.</p></TextSection>
@@ -132,7 +133,7 @@ export default function UnflappableCaseStudy() {
         <ImageFrame className="unflappable-visual--phone unflappable-visual--reset-history" label="Unflappable reset history"><SourceImage src={images.resetHistory} alt="Reset history screen" /></ImageFrame>
 
         <TextSection title="Progress &amp; Performance Tracking"><p>The Progress screen gives users a clear view of their consistency and daily performance, making it easy to see how small actions contribute to long-term growth. Instead of focusing only on completed tasks, the experience highlights meaningful metrics such as day streaks, mission completion, reset activity, and overall progress to encourage sustainable habits.</p><p>Designed with simplicity in mind, the screen presents key insights in a clean and organized layout that users can understand at a glance. By turning daily actions into visible progress, Unflappable reinforces positive behavior, keeps users motivated, and helps them stay committed to their personal goals without overwhelming them with unnecessary data.</p></TextSection>
-        <ImageFrame className="unflappable-visual--phone" label="Unflappable progress tracking"><SourceImage src={images.progress} alt="Progress and performance tracking screen" /></ImageFrame>
+        <ImageFrame className="unflappable-visual--phone" label="Unflappable progress tracking"><SourceImage src={images.progress} srcSet={`${optimizedUnflappableAsset("unflappable-19625-640.webp")} 640w, ${optimizedUnflappableAsset("unflappable-19625-960.webp")} 960w`} sizes="(min-width: 801px) 263px, 36vw" alt="Progress and performance tracking screen" /></ImageFrame>
 
         <section className="flare-benefits-block"><TextSection title="Key Benefits"><p>Unflappable is built to help users stay focused, recover quickly from pressure, and consistently follow through on what matters most. By combining daily planning, guided reflection, progress tracking, and emotional reset tools, the app creates a simple system that supports both productivity and personal growth.</p></TextSection><BenefitCard title="Core Benefits" intro="Every feature is designed to reduce distractions, encourage consistent action, and help users stay in control throughout their day." items={coreBenefits} /></section>
         <BenefitCard title="User Benefits" intro="The experience was designed to make productivity feel intentional, sustainable, and easy to maintain every day." items={userBenefits} />

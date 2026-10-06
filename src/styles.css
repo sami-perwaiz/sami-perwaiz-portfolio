@@ -1124,7 +1124,6 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 50px;
 }
 
 .service-viewport {
@@ -1136,10 +1135,6 @@ button {
   overscroll-behavior-x: contain;
   -webkit-user-select: none;
   user-select: none;
-  --service-autoplay-interval: 3500ms;
-  --service-animation-duration: 700ms;
-  --service-card-hold-duration: 1800ms;
-  --service-snap-duration: 300ms;
 }
 
 .service-row {
@@ -1148,74 +1143,28 @@ button {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  transition-property: transform;
-  transition-duration: 0ms;
-  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translate3d(0, 0, 0);
   will-change: transform;
 }
 
-.service-row.is-transitioning {
-  transition-duration: var(--service-animation-duration);
-}
-
-.service-row.is-snapping {
-  transition-duration: var(--service-snap-duration);
-}
-
-.service-stepper {
-  height: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.service-step {
-  position: relative;
-  width: 8px;
-  height: 8px;
-  flex: 0 0 auto;
-  overflow: hidden;
-  background: #d8d8d8;
-  border-radius: 30px;
-  transition: width 240ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.service-step.is-active {
-  width: 40px;
-}
-
-.service-step-progress {
-  position: absolute;
-  inset: 0;
-  background: #000000;
-  border-radius: 30px;
-  transform: scaleX(0);
-  transform-origin: left center;
-}
-
-.service-step.is-active .service-step-progress {
-  animation: service-step-progress var(--service-step-duration) linear forwards;
-}
-
-.service-step.is-active.is-paused .service-step-progress {
-  animation-play-state: paused;
-}
-
-@keyframes service-step-progress {
-  to {
-    transform: scaleX(1);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .service-step {
-    transition: none;
+  .service-viewport {
+    overflow-x: auto;
+    touch-action: pan-x pan-y;
+    scrollbar-width: none;
   }
 
-  .service-step.is-active .service-step-progress {
-    animation: none;
-    transform: scaleX(1);
+  .service-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .service-row {
+    transform: none;
+    will-change: auto;
+  }
+
+  .service-sequence[aria-hidden="true"] {
+    display: none;
   }
 }
 
@@ -1515,19 +1464,19 @@ button {
 
 .t-grid {
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: 24px;
 }
 
 .t-row {
-  display: flex;
-  gap: 24px;
-  width: 100%;
+  display: contents;
 }
 
 .t-card {
-  flex: 1;
+  min-width: 0;
+  min-height: 228px;
   background: #ffffff;
   border: 1px solid #eaeaea;
   border-radius: 12px;
@@ -1541,7 +1490,7 @@ button {
   font-size: 16px;
   line-height: 26px;
   color: #4d4d4d;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .t-foot {
@@ -1549,6 +1498,8 @@ button {
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .t-person {
@@ -1980,11 +1931,27 @@ button {
 }
 
 .case-study-home-tail {
+  --contact-gutter: 80px;
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 1440px;
-  height: 861px;
+  height: auto;
   flex: 0 0 auto;
+}
+
+.case-study-home-tail .social {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 100%;
+  padding: 120px var(--contact-gutter);
+  scroll-margin-top: 105px;
+}
+
+.case-study-home-tail .social-grid {
+  width: min(680px, 100%);
 }
 
 .home-page-tail {
@@ -2729,6 +2696,14 @@ button {
     overflow: hidden;
   }
 
+  .case-study-home-tail {
+    --contact-gutter: clamp(32px, 4vw, 50px);
+  }
+
+  .case-study-home-tail .social {
+    padding: clamp(88px, 9vw, 120px) var(--contact-gutter);
+  }
+
   .page .hero-title {
     position: relative;
     top: auto;
@@ -2975,6 +2950,10 @@ button {
     padding-top: clamp(220px, 27vw, 276px);
   }
 
+  .case-study-home-tail {
+    --contact-gutter: 32px;
+  }
+
   .page .hero-tag {
     margin-top: clamp(112px, 15vw, 150px);
   }
@@ -3030,6 +3009,33 @@ button {
   .page {
     --home-gutter: 20px;
     padding-top: clamp(176px, 46vw, 210px);
+  }
+
+  .case-study-home-tail {
+    --contact-gutter: 20px;
+  }
+
+  .case-study-home-tail .social {
+    padding: 80px var(--contact-gutter);
+  }
+
+  .case-study-home-tail .social-inner {
+    gap: 56px;
+  }
+
+  .case-study-home-tail .social-title {
+    font-size: clamp(30px, 8vw, 36px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .case-study-home-tail .social-pair {
+    flex-direction: column;
+  }
+
+  .case-study-home-tail .social-item {
+    width: 100%;
+    flex: none;
   }
 
   .page .hero-title {
@@ -3168,7 +3174,7 @@ button {
   }
 
   .page .services-carousel {
-    gap: 36px;
+    gap: 0;
   }
 
   .page .service-card {
@@ -3207,8 +3213,9 @@ button {
     line-height: 1.35;
   }
 
-  .page .t-row {
-    flex-direction: column;
+  .page .t-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
   }
 
   .page .t-card {
@@ -3261,11 +3268,19 @@ button {
   .page .social-item-inner span {
     font-size: 18px;
   }
+
+  .case-study-home-tail .social-item-inner span {
+    font-size: 18px;
+  }
 }
 
 @media (max-width: 389px) {
   .page {
     --home-gutter: 16px;
+  }
+
+  .case-study-home-tail {
+    --contact-gutter: 16px;
   }
 
   .page .hero-name-row {
@@ -3307,6 +3322,18 @@ button {
   }
 
   .page .social-item-inner span {
+    font-size: 16px;
+  }
+
+  .case-study-home-tail .social-item {
+    padding: 14px;
+  }
+
+  .case-study-home-tail .social-item-inner {
+    gap: 10px;
+  }
+
+  .case-study-home-tail .social-item-inner span {
     font-size: 16px;
   }
 }
