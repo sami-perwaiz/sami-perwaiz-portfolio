@@ -678,31 +678,7 @@ const serviceCards: ServiceCardData[] = [
 ];
 
 const SERVICE_SCROLL_SPEED = 32;
-const SERVICE_TOUCH_AXIS_THRESHOLD = 8;
-
-type TouchAxis = "undetermined" | "horizontal" | "vertical";
-
-type TouchGesture = {
-  axis: TouchAxis;
-  animationTime: number;
-  deltaX: number;
-  deltaY: number;
-  ignore: boolean;
-  startX: number;
-  startY: number;
-};
-
-function createTouchGesture(): TouchGesture {
-  return {
-    axis: "undetermined",
-    animationTime: 0,
-    deltaX: 0,
-    deltaY: 0,
-    ignore: false,
-    startX: 0,
-    startY: 0,
-  };
-}
+const SERVICE_SCROLL_SETTLE_MS = 180;
 
 function ServiceCard({ card }: { card: ServiceCardData }) {
   return (
@@ -735,83 +711,104 @@ function ServiceCard({ card }: { card: ServiceCardData }) {
 }
 
 function ServicesCarousel() {
-  const rowRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const sequenceRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<Animation | null>(null);
-  const animationDurationRef = useRef(0);
-  const animationPhaseRef = useRef(0);
+  const sequenceWidthRef = useRef(0);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastFrameTimeRef = useRef<number | null>(null);
+  const resumeTimerRef = useRef<number | null>(null);
   const isHoveredRef = useRef(false);
   const isTouchingRef = useRef(false);
+  const isManualScrollingRef = useRef(false);
   const reducedMotionRef = useRef(false);
-  const touchGestureRef = useRef<TouchGesture>(createTouchGesture());
 
-  const normalizeAnimationTime = (time: number) => {
-    const duration = animationDurationRef.current;
-    if (duration <= 0) return 0;
-    return ((time % duration) + duration) % duration;
+  const clearResumeTimer = () => {
+    if (resumeTimerRef.current !== null) {
+      window.clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
   };
 
-  const rebuildAnimation = useCallback(() => {
-    const row = rowRef.current;
-    const sequence = sequenceRef.current;
-    if (!row || !sequence) return;
+  const scheduleAutoResume = (delay = SERVICE_SCROLL_SETTLE_MS) => {
+    clearResumeTimer();
+    resumeTimerRef.current = window.setTimeout(() => {
+      resumeTimerRef.current = null;
+      isManualScrollingRef.current = false;
+    }, delay);
+  };
 
-    const previousAnimation = animationRef.current;
-    const previousDuration = animationDurationRef.current;
-    if (previousAnimation && previousDuration > 0 && typeof previousAnimation.currentTime === "number") {
-      animationPhaseRef.current = normalizeAnimationTime(previousAnimation.currentTime) / previousDuration;
+  const normalizeScrollPosition = useCallback(() => {
+    const viewport = viewportRef.current;
+    const sequenceWidth = sequenceWidthRef.current;
+    if (!viewport || sequenceWidth <= 0 || reducedMotionRef.current) return;
+
+    if (viewport.scrollLeft <= sequenceWidth * 0.25) {
+      viewport.scrollLeft += sequenceWidth;
+    } else if (viewport.scrollLeft >= sequenceWidth * 1.75) {
+      viewport.scrollLeft -= sequenceWidth;
     }
+  }, []);
 
-    previousAnimation?.cancel();
-    animationRef.current = null;
-    animationDurationRef.current = 0;
-    row.style.removeProperty("transform");
+  const updateSequenceMetrics = useCallback(() => {
+    const viewport = viewportRef.current;
+    const sequence = sequenceRef.current;
+    if (!viewport || !sequence) return;
 
-    if (reducedMotionRef.current) return;
-
+    const previousWidth = sequenceWidthRef.current;
+    const previousPhase = previousWidth > 0 ? (viewport.scrollLeft % previousWidth) / previousWidth : 0;
     const sequenceWidth = sequence.getBoundingClientRect().width;
     if (sequenceWidth <= 0) return;
 
-    const duration = (sequenceWidth / SERVICE_SCROLL_SPEED) * 1000;
-    const animation = row.animate(
-      [
-        { transform: "translate3d(0, 0, 0)" },
-        { transform: `translate3d(${-sequenceWidth}px, 0, 0)` },
-      ],
-      {
-        duration,
-        easing: "linear",
-        iterations: Infinity,
-      },
-    );
-
-    animationDurationRef.current = duration;
-    animation.currentTime = animationPhaseRef.current * duration;
-    animationRef.current = animation;
-
-    if (isHoveredRef.current || isTouchingRef.current) animation.pause();
+    sequenceWidthRef.current = sequenceWidth;
+    viewport.scrollLeft = reducedMotionRef.current ? 0 : sequenceWidth * (1 + previousPhase);
   }, []);
 
   useLayoutEffect(() => {
     const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const handleReducedMotionChange = () => {
       reducedMotionRef.current = reducedMotionQuery.matches;
-      rebuildAnimation();
+      updateSequenceMetrics();
     };
-    const resizeObserver = new ResizeObserver(rebuildAnimation);
+    const resizeObserver = new ResizeObserver(updateSequenceMetrics);
+    const animate = (time: number) => {
+      const viewport = viewportRef.current;
+      const previousTime = lastFrameTimeRef.current;
+      lastFrameTimeRef.current = time;
+
+      if (
+        viewport &&
+        previousTime !== null &&
+        !reducedMotionRef.current &&
+        !isHoveredRef.current &&
+        !isTouchingRef.current &&
+        !isManualScrollingRef.current
+      ) {
+        const elapsed = Math.min(time - previousTime, 50);
+        viewport.scrollLeft += (SERVICE_SCROLL_SPEED * elapsed) / 1000;
+        normalizeScrollPosition();
+      }
+
+      animationFrameRef.current = window.requestAnimationFrame(animate);
+    };
+    const handleVisibilityChange = () => {
+      lastFrameTimeRef.current = null;
+    };
 
     reducedMotionRef.current = reducedMotionQuery.matches;
-    rebuildAnimation();
+    updateSequenceMetrics();
     if (sequenceRef.current) resizeObserver.observe(sequenceRef.current);
     reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    animationFrameRef.current = window.requestAnimationFrame(animate);
 
     return () => {
       resizeObserver.disconnect();
       reducedMotionQuery.removeEventListener("change", handleReducedMotionChange);
-      animationRef.current?.cancel();
-      animationRef.current = null;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
+      clearResumeTimer();
     };
-  }, [rebuildAnimation]);
+  }, [normalizeScrollPosition, updateSequenceMetrics]);
 
   const handlePointerEnter = (event: React.PointerEvent<HTMLDivElement>) => {
     if (
@@ -820,7 +817,6 @@ function ServicesCarousel() {
     ) return;
 
     isHoveredRef.current = true;
-    animationRef.current?.pause();
   };
 
   const handlePointerLeave = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -830,94 +826,49 @@ function ServicesCarousel() {
     ) return;
 
     isHoveredRef.current = false;
-    if (!isTouchingRef.current && !reducedMotionRef.current) animationRef.current?.play();
   };
 
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (reducedMotionRef.current || event.touches.length !== 1) {
-      touchGestureRef.current = { ...createTouchGesture(), ignore: true };
-      return;
-    }
-
-    const touch = event.touches[0];
-    touchGestureRef.current = {
-      ...createTouchGesture(),
-      animationTime:
-        typeof animationRef.current?.currentTime === "number" ? animationRef.current.currentTime : 0,
-      startX: touch.clientX,
-      startY: touch.clientY,
-    };
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(event.deltaX) < 0.5) return;
+    isManualScrollingRef.current = true;
+    scheduleAutoResume();
   };
 
-  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-    const gesture = touchGestureRef.current;
-    if (gesture.ignore || event.touches.length !== 1) return;
-
-    const touch = event.touches[0];
-    gesture.deltaX = touch.clientX - gesture.startX;
-    gesture.deltaY = touch.clientY - gesture.startY;
-
-    if (gesture.axis === "undetermined") {
-      if (
-        Math.abs(gesture.deltaX) < SERVICE_TOUCH_AXIS_THRESHOLD &&
-        Math.abs(gesture.deltaY) < SERVICE_TOUCH_AXIS_THRESHOLD
-      ) return;
-      gesture.axis = Math.abs(gesture.deltaX) > Math.abs(gesture.deltaY) ? "horizontal" : "vertical";
-    }
-
-    if (gesture.axis !== "horizontal") return;
-
-    if (!isTouchingRef.current) {
-      isTouchingRef.current = true;
-      animationRef.current?.pause();
-      gesture.animationTime =
-        typeof animationRef.current?.currentTime === "number" ? animationRef.current.currentTime : 0;
-    }
-
-    if (animationRef.current) {
-      const dragTime = (gesture.deltaX / SERVICE_SCROLL_SPEED) * 1000;
-      animationRef.current.currentTime = normalizeAnimationTime(gesture.animationTime - dragTime);
-    }
+  const handleScroll = () => {
+    normalizeScrollPosition();
+    if (isManualScrollingRef.current && !isTouchingRef.current) scheduleAutoResume();
   };
 
-  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    const gesture = touchGestureRef.current;
-    if (gesture.ignore) {
-      touchGestureRef.current = createTouchGesture();
-      return;
-    }
-
-    const touch = event.changedTouches[0];
-    if (touch) {
-      gesture.deltaX = touch.clientX - gesture.startX;
-      gesture.deltaY = touch.clientY - gesture.startY;
-    }
-
-    if (isTouchingRef.current) {
-      isTouchingRef.current = false;
-      if (!isHoveredRef.current && !reducedMotionRef.current) animationRef.current?.play();
-    }
-    touchGestureRef.current = createTouchGesture();
+  const handleTouchStart = () => {
+    clearResumeTimer();
+    isTouchingRef.current = true;
+    isManualScrollingRef.current = true;
   };
 
-  const handleTouchCancel = () => {
+  const finishTouchInteraction = () => {
     isTouchingRef.current = false;
-    touchGestureRef.current = createTouchGesture();
-    if (!isHoveredRef.current && !reducedMotionRef.current) animationRef.current?.play();
+    scheduleAutoResume();
   };
 
   return (
     <div className="services-carousel">
       <div
         className="service-viewport"
+        ref={viewportRef}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
+        onWheel={handleWheel}
+        onScroll={handleScroll}
         onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchCancel}
+        onTouchEnd={finishTouchInteraction}
+        onTouchCancel={finishTouchInteraction}
       >
-        <div className="service-row" ref={rowRef}>
+        <div className="service-row">
+          <div className="service-sequence" aria-hidden="true">
+            {serviceCards.map((card) => (
+              <ServiceCard card={card} key={`previous-${card.title}`} />
+            ))}
+          </div>
           <div className="service-sequence" ref={sequenceRef}>
             {serviceCards.map((card) => (
               <ServiceCard card={card} key={card.title} />
